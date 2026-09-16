@@ -8,6 +8,40 @@ interface Props {
   children?: React.ReactNode
 }
 
+/**
+ * 信号类型中文名（与后端 `api/v1/signals.py::DATA_SOURCES` 保持一致）。
+ *
+ * 放在这里而不是各页各写一份：数据源名称出现在信号库、需求探针两处，
+ * 各写一份必然漂移（同一概念多个入口 —— 见工作区约定 19）。
+ */
+export const SIGNAL_TYPE_LABEL: Record<string, string> = {
+  policy: '政策',
+  patent: '专利',
+  paper: '论文',
+  funding: '融资',
+  recruit: '招聘',
+  social: '社媒',
+  review: '评论',
+  forum: '论坛',
+  bidding: '招标',
+  news: '产业媒体',
+  supply: '供应链',
+}
+
+/**
+ * 时间戳 → `MM-DD HH:mm`。
+ *
+ * 用于给「上一次分析/扫描/探针」的结果打时间标签：结果会跨路由保留
+ * （见 `hooks/usePersistentState`），不标时间就会被误读成刚跑出来的新结果。
+ */
+export function formatClock(iso?: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
 /** 空状态：插图 + 引导文案 + 主行动按钮（《原型设计》§4.2） */
 export function EmptyState({ title, description, actionText, onAction, children }: Props) {
   return (

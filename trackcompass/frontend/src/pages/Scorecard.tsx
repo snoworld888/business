@@ -25,10 +25,35 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import PageHead from '../components/PageHead'
 import Radar from '../components/Radar'
 import EvidenceDrawer from '../components/EvidenceDrawer'
-import { EmptyState, RankingBars } from '../components/widgets'
+import { EmptyState, RankingBars, formatClock } from '../components/widgets'
 import { opportunityApi, scorecardApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
-import type { AgentTraceItem, OpportunityScore, ScoreDimension } from '../api/types'
+import { usePersistentState } from '../hooks/usePersistentState'
+import type {
+  AgentTraceItem,
+  OpportunityScore,
+  ProfileUsed,
+  ScoreDimension,
+} from '../api/types'
+
+/** 画像字段 → 中文名（「本次分析依据」表用） */
+const PROFILE_FIELD_LABEL: Record<string, string> = {
+  tech_stack: '技术栈',
+  patents: '专利',
+}
+
+/** 上一次七 Agent 分析的产物。
+ *
+ * 为什么要持久化：七 Agent 分析是**全站最贵的一次操作**（接真实模型约 47s），
+ * 只是切个菜单再回来就看不到「执行明细 / 本次分析依据」，用户得重跑。
+ * 按 `opportunityId` 存 —— 换机会卡片时不能串台。
+ */
+interface AnalysisRun {
+  opportunityId: string
+  at: string
+  trace: AgentTraceItem[]
+  profileUsed: ProfileUsed | null
+}
 
 const VERDICT_COLOR: Record<string, string> = {
   go: 'success',
@@ -47,7 +72,18 @@ export default function Scorecard() {
   const [evidenceOpen, setEvidenceOpen] = useState(false)
   const [localWeights, setLocalWeights] = useState<Record<string, number> | null>(null)
   const [preview, setPreview] = useState<{ total_score: number; explained?: OpportunityScore['explained'] } | null>(null)
-  const [trace, setTrace] = useState<AgentTraceItem[]>([])
+  const [lastRun, setLastRun] = usePersistentState<AnalysisRun | null>('scorecard:lastRun', null)
+
+  /** 只有「当前选中的机会卡片」的上一次运行结果才展示，否则串台误导 */
+  const currentRun = lastRun && selectedId && lastRun.opportunityId === selectedId ? lastRun : null
+  const trace = currentRun?.trace ?? []
+  const profileUsed = currentRun?.profileUsed ?? null
+
+  /** 本次命中的能力词集合 —— 用于在「分析依据」表里高亮 */
+  const matchedTerms = useMemo(
+    () => new Set((profileUsed?.matched ?? []).map((m) => m.term)),
+    [profileUsed],
+  )
 
   const { data: card, refresh: refreshCard } = useAsync(() => scorecardApi.default(), [])
   const { data: list, refresh: refreshList } = useAsync(
@@ -95,7 +131,12 @@ export default function Scorecard() {
         max_loops: 1,
         persist: true,
       })
-      setTrace(res.trace as AgentTraceItem[])
+      setLastRun({
+        opportunityId: selectedId,
+        at: new Date().toISOString(),
+        trace: res.trace as AgentTraceItem[],
+        profileUsed: res.profile_used ?? null,
+      })
       const engines = new Set(res.trace.map((t) => (t as AgentTraceItem).engine ?? 'rule-engine'))
       const engineLabel = engines.has('llm') ? '真实大模型' : '规则引擎'
       message.success(
@@ -348,18 +389,106 @@ export default function Scorecard() {
             ) : null}
           </Card>
 
+          {profileUsed ? (
+            <Card
+              title="本次分析依据（公司能力如何参与）"
+              size="small"
+              style={{ marginTop: 16 }}
+              extra={
+                <Space>
+                  <Tag className="tc-tag-soft">{formatClock(currentRun?.at)}</Tag>
+                  <Tag color="purple" className="tc-tag-soft">
+                    {profileUsed.company ?? '未选择公司'}
+                  </Tag>
+                </Space>
+              }
+            >
+              <Typography.Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 10 }}>
+                趋势由外部信号生成，公司画像只参与「能力匹配」标注。
+                下表列出画像每个条目抽出的能力词（金色 = 本次命中了某条趋势）。
+              </Typography.Paragraph>
+              {profileUsed.note ? (
+                <Alert type="warning" showIcon message={profileUsed.note} />
+              ) : (
+                <>
+                  <Table
+                    size="small"
+                    pagination={false}
+                    rowKey={(r, i) => `${r.field}-${i}`}
+                    dataSource={profileUsed.by_source}
+                    columns={[
+                      {
+                        title: '来源',
+                        dataIndex: 'field',
+                        width: 84,
+                        render: (v: string) => (
+                          <Tag className="tc-tag-soft">{PROFILE_FIELD_LABEL[v] ?? v}</Tag>
+                        ),
+                      },
+                      { title: '画像条目', dataIndex: 'raw', ellipsis: true },
+                      {
+                        title: '抽出的能力词',
+                        dataIndex: 'terms',
+                        width: 260,
+                        render: (terms: string[]) =>
+                          (terms ?? []).length ? (
+                            (terms ?? []).map((t) => (
+                              <Tag
+                                key={t}
+                                className="tc-tag-soft"
+                                color={matchedTerms.has(t) ? 'gold' : undefined}
+                                style={{ marginBottom: 4 }}
+                              >
+                                {t}
+                              </Tag>
+                            ))
+                          ) : (
+                            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                              —
+                            </Typography.Text>
+                          ),
+                      },
+                    ]}
+                  />
+                  <div style={{ marginTop: 10 }}>
+                    {profileUsed.matched.length ? (
+                      profileUsed.matched.map((m) => (
+                        <div key={m.term} style={{ fontSize: 12, marginBottom: 4 }}>
+                          <Tag color="gold" className="tc-tag-soft">
+                            {m.term}
+                          </Tag>
+                          <Typography.Text type="secondary">
+                            命中趋势：{m.trends.join('、')}
+                          </Typography.Text>
+                        </div>
+                      ))
+                    ) : (
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        本次没有能力词命中趋势 —— 外部信号里还没有与公司能力直接相关的方向，
+                        这些词会出现在趋势雷达的「情报空白」区。
+                      </Typography.Text>
+                    )}
+                  </div>
+                </>
+              )}
+            </Card>
+          ) : null}
+
           {trace.length ? (
             <Card
               title="本次分析执行明细"
               size="small"
               style={{ marginTop: 16 }}
               extra={
-                <Tag
-                  color={trace.some((t) => t.engine === 'llm') ? 'success' : 'default'}
-                  className="tc-tag-soft"
-                >
-                  {trace.some((t) => t.engine === 'llm') ? '真实大模型' : '规则引擎'}
-                </Tag>
+                <Space>
+                  <Tag className="tc-tag-soft">{formatClock(currentRun?.at)}</Tag>
+                  <Tag
+                    color={trace.some((t) => t.engine === 'llm') ? 'success' : 'default'}
+                    className="tc-tag-soft"
+                  >
+                    {trace.some((t) => t.engine === 'llm') ? '真实大模型' : '规则引擎'}
+                  </Tag>
+                </Space>
               }
             >
               <Table

@@ -16,7 +16,7 @@ from app.agents.base import (
 )
 from app.agents.competition import CompetitionIntelAgent
 from app.agents.decision import DecisionSynthesisAgent
-from app.agents.demand import DemandDiscoveryAgent
+from app.agents.demand import DemandDiscoveryAgent, demand_pool
 from app.agents.market import MarketSizingAgent
 from app.agents.monitor import (
     ALERT_LEVELS,
@@ -27,7 +27,8 @@ from app.agents.monitor import (
     normalize_alert_level,
 )
 from app.agents.tech import TechAssessmentAgent
-from app.agents.trend import TrendReconAgent, capability_terms
+from app.agents.base import AgentState, SignalView, extract_patent_terms
+from app.agents.trend import TrendReconAgent, capability_terms, capability_terms_by_source
 from app.services.rag import RAGEngine
 from app.services.scoring import DEFAULT_DIMENSIONS
 
@@ -168,6 +169,40 @@ class TestDemandAgent:
             AgentState(query="x", signals=[_sig(1, "policy", "无关政策")]))
         assert out["pain_points"] == []
         assert out["demand_score_5"] == 0.0
+
+    # ---------------------------------------------------------- 口径放宽（2026-09-16，用户裁决 ③）
+    # 背景：真实信号库长期只有 news/paper/policy（需求侧一条都没有），
+    # 只认需求侧的写法会让需求强度恒为 0 —— 见 docs/遗留项台账.md L-15。
+
+    def test_context_types_accepted_as_evidence(self):
+        """只有补充类型（论文/产业媒体）时也必须能出痛点，不能归零。"""
+        sigs = [
+            _sig(1, "paper", "工业质检小样本标注成本高", "标注成本高、周期长，尚未解决"),
+            _sig(2, "news", "产线仍靠人工复检", "人工复检多，严重依赖老师傅"),
+        ]
+        out = DemandDiscoveryAgent().rule(AgentState(query="质检", signals=sigs))
+        assert out["pain_points"], "补充类型必须能聚类出痛点（否则需求探针恒空）"
+        assert out["sample_size"] == 2
+        assert {p["name"] for p in out["pain_points"]} >= {"部署成本高", "人工复检多"}
+
+    def test_demand_side_ranks_before_context(self):
+        """组池顺序：需求侧（用户直接发声）在前，补充类型在后。"""
+        state = AgentState(query="质检", signals=[
+            _sig(1, "paper", "一篇论文"), _sig(2, "social", "一条用户发声")])
+        assert [s.signal_type for s in demand_pool(state)] == ["social", "paper"]
+
+    def test_prompt_count_matches_pool(self):
+        """prompt 自述的条数必须等于真实取数。
+
+        踩过的坑：`build_prompt` 曾自己写 `by_type(需求侧五类)`，
+        而真正送进 prompt 的 context 来自 `retrieve()`（全量信号）⇒
+        prompt 自称「以下是 0 条信号」却塞满一屏证据，模型可信度无从判断。
+        """
+        agent = DemandDiscoveryAgent()
+        state = AgentState(query="质检", signals=[_sig(1, "paper", "质检论文")])
+        prompt = agent.build_prompt(state, "[E1] 某论文")
+        assert "以下是 1 条需求相关信号" in prompt
+        assert "paper" in prompt
 
 
 # ------------------------------------------------------------------ 市场测算
@@ -626,6 +661,73 @@ class TestTrendCapabilityCrossCheck:
         agent = TrendReconAgent()
         out = agent.rule(AgentState(industry="AI+制造", signals=[]))
         assert out["capability_gaps"] == []
+
+
+class TestPatentTermExtraction:
+    """专利标题抽词（2026-09-16）。
+
+    实测缺陷：专利标题在 `TECH_VOCAB` 上命中率极低 ——
+    「小样本工业缺陷识别模型训练方法」命中 **0** 个词，原实现退化成
+    「整句当能力词」⇒ 与全库 36 个趋势标签匹配 **0** 次，**专利实际贡献恒为 0**。
+
+    修法：按中文技术名词的构词法抽「技术对象 + 动作后缀」，且**不丢弃**专利
+    （抽不到时仍退回原文，保证它出现在「本次分析依据」里可被核查）。
+    """
+
+    def test_extracts_object_plus_action(self):
+        terms = extract_patent_terms("小样本工业缺陷识别模型训练方法")
+        assert "工业缺陷识别" in terms and "模型训练" in terms
+        assert not any(len(t) > 12 for t in terms), "不应把整句当能力词"
+
+    def test_vocab_hits_take_precedence(self):
+        terms = extract_patent_terms("基于深度学习的表面缺陷检测方法")
+        assert "深度学习" in terms and "表面缺陷检测" in terms
+
+    def test_does_not_span_word_boundary(self):
+        """「视觉引导机器人抓取定位」不得抽出跨词的「器人抓取定位」。"""
+        terms = extract_patent_terms("面向工业场景的视觉引导机器人抓取定位方法")
+        assert "抓取定位" in terms
+        assert not any(t.startswith("器人") for t in terms)
+        assert not any("别模型" in t for t in terms)
+
+    def test_strips_boilerplate(self):
+        """套话（一种/基于/面向/方法/系统/装置）不该留在词里。"""
+        for term in extract_patent_terms("一种面向多设备协同的工厂物流调度系统"):
+            assert not term.startswith(("一种", "基于", "面向"))
+            assert not term.endswith(("的方法", "的系统", "装置"))
+
+    def test_empty_and_noise_only_inputs(self):
+        assert extract_patent_terms("") == []
+        assert extract_patent_terms("一种方法") == []
+
+    def test_capability_terms_reports_source(self):
+        """按来源展开：要能回答「这个能力词是从哪条专利抽出来的」。"""
+        st = AgentState(query="", profile={
+            "tech_stack": ["计算机视觉"],
+            "patents": ["小样本工业缺陷识别模型训练方法"],
+        })
+        by = capability_terms_by_source(st)
+        assert [r["raw"] for r in by["tech_stack"]] == ["计算机视觉"]
+        patent_rows = by["patents"]
+        assert len(patent_rows) == 1
+        assert patent_rows[0]["raw"] == "小样本工业缺陷识别模型训练方法"
+        assert "工业缺陷识别" in patent_rows[0]["terms"]
+
+    def test_patent_terms_flow_into_flat_terms(self):
+        """专利贡献的词必须进入扁平能力词列表（供匹配使用）。"""
+        st = AgentState(query="", profile={
+            "tech_stack": ["计算机视觉"],
+            "patents": ["小样本工业缺陷识别模型训练方法"],
+        })
+        assert capability_terms(st) == ["计算机视觉", "工业缺陷识别", "模型训练"]
+
+    def test_falls_back_to_raw_when_nothing_extracted(self):
+        """抽不到词也不丢弃 —— 退回原文，保证专利在分析依据里可见。"""
+        st = AgentState(query="", profile={
+            "patents": ["一种完全不含动作后缀的技术方案描述用语"],
+        })
+        terms = capability_terms(st)
+        assert terms, "专利不应被静默丢弃"
 
 
 # ------------------------------------------------------------------ 上游类型护栏

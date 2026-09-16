@@ -27,21 +27,30 @@ import {
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import PageHead from '../components/PageHead'
-import { EmptyState } from '../components/widgets'
+import { EmptyState, formatClock } from '../components/widgets'
 import { trendApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { usePersistentState } from '../hooks/usePersistentState'
 import type { Trend, TrendScanResult } from '../api/types'
 
 const INDUSTRIES = ['AI+制造', 'AI+医疗', '新能源科技', '具身智能']
 
-/** P04 趋势雷达（《原型设计》§5.4） */
+/** P04 趋势雷达（《原型设计》§5.4）
+ *
+ * 筛选条件与「上一次扫描结果」走会话级持久化（`usePersistentState`）：
+ * 「能力画像 × 外部信号」面板是扫描的产物，切走再回来不该消失。
+ */
 export default function Trends() {
   const navigate = useNavigate()
-  const [industry, setIndustry] = useState<string | undefined>()
-  const [direction, setDirection] = useState<string>('all')
+  const [industry, setIndustry] = usePersistentState<string | undefined>('trends:industry', undefined)
+  const [direction, setDirection] = usePersistentState<string>('trends:direction', 'all')
   const [scanning, setScanning] = useState(false)
   const [detail, setDetail] = useState<Trend | null>(null)
-  const [scanResult, setScanResult] = useState<TrendScanResult | null>(null)
+  const [scanResult, setScanResult] = usePersistentState<TrendScanResult | null>(
+    'trends:scanResult',
+    null,
+  )
+  const [scannedAt, setScannedAt] = usePersistentState<string | null>('trends:scannedAt', null)
 
   const { data, loading, refresh } = useAsync(
     () =>
@@ -60,6 +69,7 @@ export default function Trends() {
     try {
       const res = await trendApi.scan({ industry })
       setScanResult(res)
+      setScannedAt(new Date().toISOString())
       const gapN = res.capability_gaps?.length ?? 0
       message.success(
         `扫描 ${res.scanned_signals} 条信号，生成 ${res.generated} 条趋势` +
@@ -147,7 +157,7 @@ export default function Trends() {
         </Space>
       </Card>
 
-      {scanResult ? <CapabilityPanel result={scanResult} /> : null}
+      {scanResult ? <CapabilityPanel result={scanResult} scannedAt={scannedAt} /> : null}
 
       <Spin spinning={loading}>
         {trends.length === 0 ? (
@@ -308,7 +318,7 @@ export default function Trends() {
  *   · 已匹配 —— 该能力有对应趋势（有外部信号支撑）
  *   · 情报空白 —— 画像写了、但外部零信号；**不是趋势**，是需要补数据源的地方
  */
-function CapabilityPanel({ result }: { result: TrendScanResult }) {
+function CapabilityPanel({ result, scannedAt }: { result: TrendScanResult; scannedAt?: string | null }) {
   const gaps = result.capability_gaps ?? []
   const matched = result.capability_matched ?? []
   const terms = result.capability_terms ?? []
@@ -319,7 +329,12 @@ function CapabilityPanel({ result }: { result: TrendScanResult }) {
       size="small"
       title="能力画像 × 外部信号"
       style={{ marginBottom: 16 }}
-      extra={<Tag className="tc-tag-soft">画像能力词 {terms.length} 个</Tag>}
+      extra={
+        <Space>
+          {scannedAt ? <Tag className="tc-tag-soft">扫描于 {formatClock(scannedAt)}</Tag> : null}
+          <Tag className="tc-tag-soft">画像能力词 {terms.length} 个</Tag>
+        </Space>
+      }
     >
       <Space direction="vertical" size={8} style={{ width: '100%' }}>
         <Space size={8} wrap>

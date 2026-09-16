@@ -396,6 +396,28 @@ export interface AgentTraceItem {
   error?: string | null
 }
 
+/** 画像中一条原始条目 → 抽出的能力词（用于展示「这个词哪来的」） */
+export interface ProfileTermSource {
+  field: string
+  raw: string
+  terms: string[]
+}
+
+/**
+ * 本次分析依据的公司能力。
+ *
+ * 趋势雷达的定位是「外部信号生成趋势、公司画像只做标注」——
+ * 该结构把「标注」这一步变得可核查：哪些词来自技术栈、哪些来自专利抽词、
+ * 最终命中了哪条趋势。
+ */
+export interface ProfileUsed {
+  company: string | null
+  terms: string[]
+  by_source: ProfileTermSource[]
+  matched: { term: string; trends: string[] }[]
+  note?: string
+}
+
 export interface LLMHealth {
   provider: string
   remote_ready: boolean

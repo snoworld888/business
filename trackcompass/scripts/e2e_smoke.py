@@ -272,9 +272,27 @@ def run_checks() -> int:
           f"新权重下 = {preview['total_score']}")
 
     # 10 需求探针
+    #
+    # 2026-09-16 口径放宽（用户裁决③）：需求强度不再只认「需求侧五类」
+    # （社媒/评论/论坛/招标/招聘），政策/论文/产业媒体同样承载需求信息。
+    # 因此这里断言两件事：
+    #   (a) **默认口径**（需求侧 ∪ 信号库实际存在的类型）必须能出结果 ——
+    #       原先只给需求侧五类时，库里一条都没有 ⇒ 命中恒为 0（L-15）。
+    #   (b) 只选需求侧五类时，输出为空是**正确**行为（自洽，不是缺陷）。
+    #
+    # ⚠️ 关键词与行业都从**库内真实信号**里取，避免断言依赖某条固定数据
+    # （否则数据一换就假失败；约定的反面教材是「数据源覆盖 ≥5」曾恒为真）。
+    pool_sig = data(CLIENT.get("/signals", params={"limit": 1}))
+    stocks = pool_sig.get("stats") or {}
+    sample = (pool_sig.get("signals") or [None])[0]
+    stock_types = sorted(stocks.keys())
+    kw = sample["title"][:6] if sample else "人工智能"
+    ind = sample["industry"] if sample and sample.get("industry") else "AI+制造"
+    default_sources = list(dict.fromkeys(
+        ["social", "review", "bidding", "recruit", "forum"] + stock_types))
+
     probe = data(CLIENT.post("/demand/probe", json={
-        "keywords": ["质检"], "industry": "AI+制造",
-        "sources": ["social", "review", "bidding", "recruit"],
+        "keywords": [kw], "industry": ind, "sources": default_sources,
     }))
     # ⚠️ 描述串必须在断言**之前**算好：`check(名, 条件, 描述)` 的三个参数
     # 都会先求值，之前写成 `probe['pain_points'][0]['name']` 会在
@@ -282,12 +300,22 @@ def run_checks() -> int:
     pps = probe.get("pain_points") or []
     matched = probe.get("matched_signals", 0)
     strongest = f"，最强「{pps[0]['name']}」={pps[0]['demand_score']}" if pps else ""
-    # 断言的是「请求-响应自洽」而非「必须有痛点」：痛点来自社媒/评论/招标/招聘
-    # 类信号，若信号库里没有这些类型，输出为空是**正确**行为而非缺陷。
-    check("需求探针请求-响应自洽",
-          probe.get("status") == "completed" and (matched > 0) == (len(pps) > 0),
-          f"匹配 {matched} 条信号 → 聚类 {len(pps)} 类痛点{strongest}"
-          + ("" if pps else "（当前信号库无社媒/评论/招标类数据，属预期）"))
+    check("需求探针（放宽口径）能出结果",
+          probe.get("status") == "completed" and matched > 0 and len(pps) > 0
+          and 1.0 <= probe.get("demand_score_5", 0) <= 5.0,
+          f"{'＋'.join(default_sources)} / 关键词「{kw}」→ 匹配 {matched} 条 → "
+          f"聚类 {len(pps)} 类痛点{strongest}")
+
+    demand_only = data(CLIENT.post("/demand/probe", json={
+        "keywords": [kw], "industry": ind,
+        "sources": ["social", "review", "bidding", "recruit", "forum"],
+    }))
+    pps2 = demand_only.get("pain_points") or []
+    m2 = demand_only.get("matched_signals", 0)
+    check("需求探针请求-响应自洽（需求侧无数据时不报错）",
+          demand_only.get("status") == "completed" and (m2 > 0) == (len(pps2) > 0),
+          f"只选需求侧五类 → 匹配 {m2} 条信号 → 聚类 {len(pps2)} 类痛点"
+          + ("" if m2 else "（库内确无需求侧信号，属预期；接通数据源见 L-04）"))
 
     # 11 验证实验
     exp = data(CLIENT.post("/experiments", json={

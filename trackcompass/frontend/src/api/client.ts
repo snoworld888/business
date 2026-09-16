@@ -4,6 +4,7 @@
  */
 import axios, { type AxiosRequestConfig } from 'axios'
 import { message } from 'antd'
+import { clearSessionState } from './uiState'
 import type {
   AgentCatalogItem,
   Alert,
@@ -22,6 +23,7 @@ import type {
   OpportunityScore,
   Overview,
   PainPoint,
+  ProfileUsed,
   Replay,
   Report,
   Scorecard,
@@ -53,6 +55,9 @@ export const storage = {
   clear: () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
+    // 会话级 UI 状态（需求探针结果 / 趋势扫描结果 / 七 Agent 分析明细）必须一起清：
+    // 否则换个账号登录后，上一个账号的分析结果仍留在页面上
+    clearSessionState()
   },
 }
 
@@ -249,6 +254,8 @@ export const opportunityApi = {
       loops: number
       errors: Array<{ agent: string; error: string }>
       signal_count: number
+      /** 本次分析依据的公司能力（技术栈 + 专利抽词 → 命中的趋势） */
+      profile_used: ProfileUsed
     }>({ url: `/opportunities/${id}/analyze`, method: 'POST', data: payload }),
   score: (id: string) => unwrap<OpportunityScore & { title: string }>({ url: `/opportunities/${id}/score` }),
   preview: (id: string, weights: Record<string, number>) =>

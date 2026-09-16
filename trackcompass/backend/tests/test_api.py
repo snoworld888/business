@@ -519,6 +519,33 @@ class TestEndToEnd:
         detail = data(client.get(f"{P}/opportunities/{created['id']}", headers=auth_headers))
         assert detail["score"] == {} or detail["score"].get("total_score") in (None, 0)
 
+    def test_analyze_returns_profile_used(self, client: TestClient, auth_headers):
+        """分析结果必须能回答「本次用了公司的哪些能力」。
+
+        背景（用户实测反馈）：「会使用公司的标签、专利这些吗？现在的分析看不到这些内容」。
+        趋势雷达的定位是「外部信号生成趋势、公司画像只做标注」，
+        因此「标注」这一步必须可核查 —— 否则只能看到一个 ⚑ 结论。
+        """
+        created = data(client.post(f"{P}/opportunities",
+                                   json={"title": "分析依据检查"}, headers=auth_headers))
+        d = data(client.post(f"{P}/opportunities/{created['id']}/analyze",
+                             json={"industry": "AI+制造", "max_loops": 0, "persist": False},
+                             headers=auth_headers))
+        pu = d["profile_used"]
+        assert pu["company"], "应带出当前公司名"
+        assert pu["terms"], "应列出参与匹配的能力词"
+
+        fields = {r["field"] for r in pu["by_source"]}
+        assert "tech_stack" in fields
+        # ⚠️ 回归点：`build_profile_input` 曾漏传 patents，导致分析路径的
+        # 专利能力恒为空（与接口层 `deps.current_capability_terms` 口径不一致）。
+        assert "patents" in fields, "专利必须参与分析（此前该路径根本没传 patents）"
+
+        for row in pu["by_source"]:
+            assert row["raw"] and row["terms"], "每条画像条目都要能落到具体能力词"
+        for m in pu["matched"]:
+            assert m["term"] and isinstance(m["trends"], list)
+
 
 # ------------------------------------------------------------------ 机会与图谱
 class TestOpportunities:

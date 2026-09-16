@@ -1,8 +1,21 @@
 """需求挖掘 Agent（技术文档 §5.3.2 / §4.4）。
 
-输入：社媒、评论、招标、招聘
+输入：社媒、评论、论坛、招标、招聘（需求侧，**主证据**）
+      + 产业媒体、论文、政策（**补充证据**，2026-09-16 放宽口径，见下）
 工具：cluster_pain_points / sentiment_analysis
 输出：痛点聚类 + 需求强度 + 建议验证实验
+
+口径放宽的依据（用户裁决 ③，2026-09-16）
+----------------------------------------
+原实现只认需求侧五类。但真实信号库长期只有 `news / paper / policy`
+（需求侧**一条都没有**，见 `docs/遗留项台账.md` L-15）⇒ `by_type()` 恒空
+⇒ 需求强度恒为 0，需求探针结构性不可用。
+
+放宽后承认：**政策（强制性要求/补贴导向）、论文（未解的技术痛点）、
+产业媒体（行业诉求与扩产意图）同样承载需求信息**，只是
+**证据强度弱于用户自己发声**（没有直接的付费意愿与负面情绪表达）。
+因此按「需求侧优先、补充类型随后、全量兜底」的顺序组池，
+并在 prompt 里如实说明证据类型，让模型自己判断可信度。
 """
 
 from __future__ import annotations
@@ -26,7 +39,34 @@ from app.agents.base import (
 from app.services.llm import COMPLEXITY_COMPLEX
 from app.services.scoring import demand_score
 
-SOURCE_TYPES = ("social", "review", "bidding", "recruit", "forum")
+#: 需求侧信号 —— 用户/客户**自己发声**，是需求强度的主证据
+DEMAND_SOURCE_TYPES = ("social", "review", "bidding", "recruit", "forum")
+
+#: 补充信号 —— 承载需求信息，但证据强度弱于用户发声
+CONTEXT_SOURCE_TYPES = ("news", "paper", "policy")
+
+#: 实际参与聚类的类型 = 主证据 + 补充证据
+SOURCE_TYPES = DEMAND_SOURCE_TYPES + CONTEXT_SOURCE_TYPES
+
+#: 组池时的优先级（需求侧在前 —— 模型与聚类样本都会先看到它们）
+_TYPE_PRIORITY = {t: i for i, t in enumerate(SOURCE_TYPES)}
+
+
+def demand_pool(state: AgentState) -> list[SignalView]:
+    """需求探针的取数口径 —— **rule / build_prompt 必须共用这一份**。
+
+    优先级：需求侧五类 → 补充三类 → （都为空时）全量兜底。
+
+    ⚠️ 为什么必须抽成一个函数：`build_prompt` 曾自己写 `state.by_type(*SOURCE_TYPES)`，
+    而真正送给模型的 context 来自 `retrieve()`（用的是全量信号）——
+    两者不一致时 prompt 会自称「以下是 0 条信号」却塞进一屏真实信号，
+    模型据此输出的可信度无从判断。口径不统一 = 自相矛盾的提示词。
+    """
+    pool = state.by_type(*SOURCE_TYPES)
+    if not pool:
+        # 全量兜底：宁可让模型看到弱相关信号，也不要喂空 prompt（会凭空编造）
+        pool = state.since()
+    return sorted(pool, key=lambda s: _TYPE_PRIORITY.get(s.signal_type, len(SOURCE_TYPES)))
 
 EXPERIMENT_RECOMMEND = {
     "检测精度低": ["落地页测试", "客户访谈", "POC"],
@@ -45,7 +85,8 @@ EXPERIMENT_RECOMMEND = {
 class DemandDiscoveryAgent(BaseAgent):
     key = "demand"
     name = "需求挖掘 Agent"
-    description = "聚类社媒/评论/招标/招聘中的痛点，输出需求强度与验证方案。"
+    description = ("聚类外部信号中的痛点（需求侧用户发声优先，产业媒体/论文/政策作为补充），"
+                   "输出需求强度与验证方案。")
     complexity = COMPLEXITY_COMPLEX
     #: 契约字段：需求强度是决策卡「需求强度」维度的输入
     required_keys = ("pain_points",)
@@ -58,7 +99,7 @@ class DemandDiscoveryAgent(BaseAgent):
         )
 
     def rule(self, state: AgentState) -> dict[str, Any]:
-        pool = state.by_type(*SOURCE_TYPES) or state.since()
+        pool = demand_pool(state)
         clusters = self._cluster(pool)
 
         pain_points: list[dict[str, Any]] = []
@@ -150,14 +191,22 @@ class DemandDiscoveryAgent(BaseAgent):
             return "人才短缺"
         if sig.signal_type == "bidding":
             return "交付周期长"
-        if re.search(r"(不|没|差|难|慢|贵)", text) and sig.signal_type in ("social", "review", "forum"):
+        # 带明确负面表达的文本归「整体体验不足」。
+        # 2026-09-16 放宽口径时把 `news` 一并纳入：产业媒体常转述行业抱怨与产能瓶颈，
+        # 而 policy / paper 多为正向或中性表述，泛化纳进来只会造出假痛点。
+        if re.search(r"(不|没|差|难|慢|贵)", text) and sig.signal_type in (
+                "social", "review", "forum", "news"):
             return "整体体验不足"
         return None
 
     def build_prompt(self, state: AgentState, context: str) -> str:
-        pool = state.by_type(*SOURCE_TYPES)
+        pool = demand_pool(state)
+        kinds = sorted({s.signal_type for s in pool})
         return (
-            f"关键词={state.query}\n以下是 {len(pool)} 条用户发声与需求信号：\n{context}\n\n"
+            f"关键词={state.query}\n"
+            f"以下是 {len(pool)} 条需求相关信号（类型：{'/'.join(kinds) or '无'}；"
+            f"其中社媒/评论/论坛/招标/招聘为用户直接发声，是主证据；"
+            f"产业媒体/论文/政策为补充证据，请据此判断可信度）：\n{context}\n\n"
             "输出痛点聚类 JSON，sentiment 取负面情感占比（负值），demand_score 为 1-5 分。"
         )
 

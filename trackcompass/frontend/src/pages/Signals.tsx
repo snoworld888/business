@@ -27,24 +27,10 @@ import {
   ReloadOutlined,
 } from '@ant-design/icons'
 import PageHead from '../components/PageHead'
+import { SIGNAL_TYPE_LABEL } from '../components/widgets'
 import { signalApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import type { CollectReport, Signal, SourceAdapter } from '../api/types'
-
-/** 信号类型中文名（与后端 `api/v1/signals.py::DATA_SOURCES` 保持一致） */
-const TYPE_LABEL: Record<string, string> = {
-  policy: '政策',
-  patent: '专利',
-  paper: '论文',
-  funding: '融资',
-  recruit: '招聘',
-  social: '社媒',
-  review: '评论',
-  forum: '论坛',
-  bidding: '招标',
-  news: '产业媒体',
-  supply: '供应链',
-}
 
 const TYPE_COLOR: Record<string, string> = {
   policy: 'red',
@@ -199,7 +185,7 @@ export default function Signals() {
                   onChange={(v) => setType(String(v))}
                   options={[
                     { label: '全部', value: 'all' },
-                    ...Object.entries(TYPE_LABEL)
+                    ...Object.entries(SIGNAL_TYPE_LABEL)
                       .filter(([k]) => (stats[k] ?? 0) > 0)
                       .map(([k, v]) => ({ label: `${v} ${stats[k]}`, value: k })),
                   ]}
@@ -224,7 +210,7 @@ export default function Signals() {
                   dataIndex: 'signal_type',
                   width: 92,
                   render: (v: string) => (
-                    <Tag color={TYPE_COLOR[v] ?? 'default'}>{TYPE_LABEL[v] ?? v}</Tag>
+                    <Tag color={TYPE_COLOR[v] ?? 'default'}>{SIGNAL_TYPE_LABEL[v] ?? v}</Tag>
                   ),
                 },
                 {
@@ -281,7 +267,7 @@ export default function Signals() {
                     <Space direction="vertical" size={0}>
                       <Typography.Text style={{ fontSize: 12 }}>{v}</Typography.Text>
                       <Typography.Text type="secondary" style={{ fontSize: 10 }}>
-                        {TYPE_LABEL[r.signal_type] ?? r.signal_type} · {r.frequency}
+                        {SIGNAL_TYPE_LABEL[r.signal_type] ?? r.signal_type} · {r.frequency}
                       </Typography.Text>
                     </Space>
                   ),
@@ -324,7 +310,7 @@ export default function Signals() {
             <Descriptions size="small" column={2} bordered>
               <Descriptions.Item label="类型">
                 <Tag color={TYPE_COLOR[detail.signal_type] ?? 'default'}>
-                  {TYPE_LABEL[detail.signal_type] ?? detail.signal_type}
+                  {SIGNAL_TYPE_LABEL[detail.signal_type] ?? detail.signal_type}
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="来源">{detail.source}</Descriptions.Item>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert,
   Button,
@@ -17,8 +17,11 @@ import {
 import { PlayCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import PageHead from '../components/PageHead'
-import { EmptyState } from '../components/widgets'
-import { demandApi } from '../api/client'
+import { EmptyState, SIGNAL_TYPE_LABEL, formatClock } from '../components/widgets'
+import { usePersistentState } from '../hooks/usePersistentState'
+import { useAsync } from '../hooks/useAuth'
+import { readSessionState } from '../api/uiState'
+import { demandApi, signalApi } from '../api/client'
 import type { DemandProbe } from '../api/types'
 
 const SOURCES = [
@@ -29,17 +32,119 @@ const SOURCES = [
   { value: 'recruit', label: '招聘' },
 ]
 
+/** 需求侧类型 —— 用户/客户**自己发声**，是「需求强度」的主证据（与后端
+ *  `agents/demand.py::DEMAND_SOURCE_TYPES` 对齐）。其余类型作为补充证据。 */
+const DEMAND_SIDE = new Set(SOURCES.map((s) => s.value))
+
 const INDUSTRIES = ['AI+制造', 'AI+医疗', '新能源科技', '具身智能']
 
-/** P06 需求探针（《原型设计》§5.6） */
+/** 上一次探针的检索条件快照 —— 结果会跨路由保留，必须能说清「它是按什么条件跑出来的」 */
+interface DemandRun {
+  at: string
+  keywords: string[]
+  sources: string[]
+  industry?: string
+}
+
+/** P06 需求探针（《原型设计》§5.6）
+ *
+ * 状态全部走 `usePersistentState`（会话级）：用户切到别的菜单再回来，
+ * 关键词 / 数据源 / 行业 / 上一次结果都还在，不会变空白、不需要重跑。
+ */
 export default function Demand() {
   const navigate = useNavigate()
-  const [keywords, setKeywords] = useState<string[]>(['质检'])
-  const [sources, setSources] = useState<string[]>(['social', 'forum', 'review', 'bidding', 'recruit'])
-  const [industry, setIndustry] = useState<string | undefined>('AI+制造')
+  const [keywords, setKeywords] = usePersistentState<string[]>('demand:keywords', ['质检'])
+  const [sources, setSources] = usePersistentState<string[]>('demand:sources', [
+    'social',
+    'forum',
+    'review',
+    'bidding',
+    'recruit',
+  ])
+  const [industry, setIndustry] = usePersistentState<string | undefined>(
+    'demand:industry',
+    'AI+制造',
+  )
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [result, setResult] = useState<DemandProbe | null>(null)
+  const [result, setResult] = usePersistentState<DemandProbe | null>('demand:result', null)
+  const [lastRun, setLastRun] = usePersistentState<DemandRun | null>('demand:lastRun', null)
+
+  /** 信号库里各类型的存量 —— 用来解释「为什么结果是 0 条」，也用于补默认数据源 */
+  const { data: signalPool } = useAsync(() => signalApi.list({ limit: 1 }), [])
+  const poolCounts = signalPool?.stats ?? {}
+  const poolSummary = Object.entries(poolCounts)
+    .map(([k, v]) => `${SIGNAL_TYPE_LABEL[k] ?? k} ${v} 条`)
+    .join(' · ')
+
+  /**
+   * 「用户是否手动改过数据源」—— 初始值直接读会话态：
+   * 改过就**不再**自动补默认，避免把用户的选择覆盖掉。
+   */
+  const sourcesTouched = useRef(readSessionState<string[]>('demand:sources') !== undefined)
+
+  const pickSources = (values: string[]) => {
+    sourcesTouched.current = true
+    setSources(values)
+  }
+
+  /**
+   * ① 默认数据源 = 设计文档的需求侧五类 **∪ 信号库里真实存在的类型**。
+   *
+   * 为什么必须扩（用户裁决①，2026-09-16）：需求侧五类在库里**一条都没有**
+   * （实测 48 条全是 产业媒体/论文/政策）⇒ 只给设计文档的默认值，
+   * 无论关键词填什么命中恒为 0，页面看起来永远「空白」（L-15）。
+   * 只在用户没动过时补一次，之后完全尊重用户选择。
+   */
+  useEffect(() => {
+    if (sourcesTouched.current || !signalPool) return
+    const available = Object.keys(signalPool.stats ?? {})
+    if (!available.length) return
+    sourcesTouched.current = true
+    setSources(Array.from(new Set([...SOURCES.map((s) => s.value), ...available])))
+  }, [signalPool, setSources])
+
+  /**
+   * 数据源选项：设计侧五类 ∪ 信号库实际类型 ∪ 已选值，**按证据强度分组**。
+   *
+   * 分组是 ③「放宽口径」在界面上的表达：告诉用户哪些是用户发声（主证据）、
+   * 哪些是补充信号，而不是把 8 个类型混成一排让人猜。
+   */
+  const sourceOptions = useMemo(() => {
+    const values = Array.from(
+      new Set([...SOURCES.map((s) => s.value), ...Object.keys(poolCounts), ...sources]),
+    )
+    const opt = (v: string) => {
+      const name = SOURCES.find((s) => s.value === v)?.label ?? SIGNAL_TYPE_LABEL[v] ?? v
+      return { value: v, label: signalPool ? `${name}（${poolCounts[v] ?? 0}）` : name }
+    }
+    const groups: Array<{
+      label: string
+      options: Array<{ value: string; label: string }>
+    }> = []
+    const demandSide = values.filter((v) => DEMAND_SIDE.has(v))
+    const contextSide = values.filter((v) => !DEMAND_SIDE.has(v))
+    if (demandSide.length) {
+      groups.push({ label: '需求侧信号（用户发声，主证据）', options: demandSide.map(opt) })
+    }
+    if (contextSide.length) {
+      groups.push({ label: '补充信号（同样承载需求信息）', options: contextSide.map(opt) })
+    }
+    return groups
+  }, [poolCounts, signalPool, sources])
+
+  /**
+   * 检索条件快照 vs 表单当前条件 —— 不一致说明结果是「过期」的，必须提示，
+   * 否则用户会以为结果对应的是刚改完的条件。
+   */
+  const stale = useMemo(() => {
+    if (!lastRun) return false
+    return (
+      lastRun.keywords.join('\u0000') !== keywords.join('\u0000') ||
+      lastRun.sources.join('\u0000') !== sources.join('\u0000') ||
+      (lastRun.industry ?? '') !== (industry ?? '')
+    )
+  }, [lastRun, keywords, sources, industry])
 
   const run = async () => {
     setLoading(true)
@@ -48,6 +153,12 @@ export default function Demand() {
     try {
       const res = await demandApi.probe({ keywords, sources, industry })
       setResult(res)
+      setLastRun({
+        at: new Date().toISOString(),
+        keywords: [...keywords],
+        sources: [...sources],
+        industry,
+      })
       setProgress(100)
       message.success(`分析完成，匹配 ${res.matched_signals ?? 0} 条信号`)
     } finally {
@@ -55,6 +166,27 @@ export default function Demand() {
       setLoading(false)
     }
   }
+
+  const clearResult = () => {
+    setResult(null)
+    setLastRun(null)
+    setProgress(0)
+  }
+
+  /**
+   * 结果为 0 时的**归因**：是「选中的源根本没数据」，还是「有数据但关键词没命中」。
+   * 这两件事的下一步动作完全不同，混成一句「未聚类到痛点」等于什么都没说。
+   */
+  const zeroReason = (() => {
+    const withStock = sources.filter((v) => (poolCounts[v] ?? 0) > 0)
+    if (!withStock.length) {
+      return `所选数据源在信号库里暂无存量（当前库内：${poolSummary || '空库'}）。` +
+        '请改选有存量的数据源，或先去信号库采集对应类型的信号。'
+    }
+    const total = withStock.reduce((acc, v) => acc + (poolCounts[v] ?? 0), 0)
+    return `所选数据源有 ${withStock.length} 类、共 ${total} 条信号，但关键词没有命中任何一条 —— ` +
+      '换用更贴近标题用词的检索词，或加入更多数据源。'
+  })()
 
   const createExperiment = (method: string) => {
     const map: Record<string, string> = {
@@ -78,7 +210,9 @@ export default function Demand() {
         title="需求探针"
         desc={
           <span>
-            接入社媒、评论、论坛、招标、招聘数据，聚类痛点并输出需求强度。公式{' '}
+            扫描外部信号聚类痛点并输出需求强度。<b>需求侧信号（社媒/评论/论坛/招标/招聘）为主证据</b>，
+            产业媒体 / 论文 / 政策作为补充（政策强制要求、技术未解痛点、行业扩产诉求同样是需求信息），
+            取值时按「需求侧优先」排序。公式{' '}
             <code className="tc-mono">
               0.3*freq + 0.3*负面情感 + 0.2*付费意愿 + 0.2*紧迫度
             </code>
@@ -113,8 +247,8 @@ export default function Demand() {
               mode="multiple"
               style={{ minWidth: 420 }}
               value={sources}
-              onChange={setSources}
-              options={SOURCES}
+              onChange={pickSources}
+              options={sourceOptions}
             />
             <Button
               type="primary"
@@ -145,11 +279,48 @@ export default function Demand() {
       </Card>
 
       {result ? (
-        <Row gutter={[16, 16]}>
+        <>
+          <Space
+            style={{ width: '100%', justifyContent: 'space-between', marginBottom: 8 }}
+            wrap
+          >
+            <Typography.Text className="tc-muted" style={{ fontSize: 12 }}>
+              上次分析 {formatClock(lastRun?.at)}
+              {lastRun
+                ? `（关键词 ${lastRun.keywords.join('、') || '—'} · 数据源 ${lastRun.sources.length} 个${
+                    lastRun.industry ? ` · ${lastRun.industry}` : ''
+                  }）`
+                : ''}
+            </Typography.Text>
+            <a onClick={clearResult} style={{ fontSize: 12 }}>
+              清除结果
+            </a>
+          </Space>
+
+          {stale ? (
+            <Alert
+              type="info"
+              showIcon
+              style={{ marginBottom: 12 }}
+              message="检索条件已改动，下方仍是上一次分析的结果"
+              description="点击「开始分析」按新条件重跑；否则请以「上次分析」括号内的条件为准。"
+            />
+          ) : null}
+
+          <Row gutter={[16, 16]}>
           <Col xs={24} lg={16}>
             <Card title={`痛点聚类（${painPoints.length} 类）`} size="small">
               {painPoints.length === 0 ? (
-                <EmptyState title="未聚类到痛点" description="尝试更换关键词或扩大数据源" />
+                <EmptyState
+                  title="未聚类到痛点"
+                  description={
+                    (result.matched_signals ?? 0) === 0
+                      ? zeroReason
+                      : '命中信号不足以聚类出痛点，尝试更换关键词或扩大数据源'
+                  }
+                  actionText="去信号库采集"
+                  onAction={() => navigate('/signals')}
+                />
               ) : (
                 <Space direction="vertical" size={12} style={{ width: '100%' }}>
                   {painPoints.map((p) => (
@@ -255,6 +426,7 @@ export default function Demand() {
             </Card>
           </Col>
         </Row>
+        </>
       ) : (
         <Card>
           <EmptyState
