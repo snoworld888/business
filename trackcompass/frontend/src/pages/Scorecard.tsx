@@ -46,6 +46,19 @@ const PROFILE_FIELD_LABEL: Record<string, string> = {
   patents: '专利',
 }
 
+/** 权重调整草稿 —— 按机会卡片存（权重是全站共享的评分卡属性，草稿要标明改的是哪张卡） */
+interface WeightsDraft {
+  opportunityId: string
+  values: Record<string, number>
+}
+
+/** 权重预览结果 —— 同样按机会卡片存，避免换卡后显示上一张的预览分 */
+interface PreviewState {
+  opportunityId: string
+  total_score: number
+  explained?: OpportunityScore['explained']
+}
+
 /** 上一次七 Agent 分析的产物。
  *
  * 为什么要持久化：七 Agent 分析是**全站最贵的一次操作**（接真实模型约 47s），
@@ -70,19 +83,59 @@ const VERDICT_COLOR: Record<string, string> = {
 export default function Scorecard() {
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()
-  const selectedId = params.get('opportunity') ?? undefined
+
+  /**
+   * 选中的机会卡片：**URL 优先，URL 没有时回退「上次选的那张」**。
+   *
+   * 为什么需要回退：选中项此前**只存在 URL 的 query 里**（`?opportunity=xxx`），
+   * 从左侧菜单点回本页时 query 会丢 ⇒ 页面回到「尚未选择机会」，
+   * 连带「执行明细 / 本次分析依据」（按机会卡片存）也因为匹配不上而一起消失。
+   */
+  const [lastOppId, setLastOppId] = usePersistentState<string | undefined>(
+    'scorecard:opportunity',
+    undefined,
+  )
+  const urlId = params.get('opportunity') ?? undefined
 
   const [evidenceOpen, setEvidenceOpen] = useState(false)
-  const [localWeights, setLocalWeights] = useState<Record<string, number> | null>(null)
-  const [preview, setPreview] = useState<{ total_score: number; explained?: OpportunityScore['explained'] } | null>(null)
+  const [weightsOpen, setWeightsOpen] = useState(false)
+  const [weightsDraft, setWeightsDraft] = usePersistentState<WeightsDraft | null>(
+    'scorecard:weightsDraft',
+    null,
+  )
+  const [previewState, setPreviewState] = usePersistentState<PreviewState | null>(
+    'scorecard:preview',
+    null,
+  )
   const [lastRun, setLastRun] = usePersistentState<AnalysisRun | null>('scorecard:lastRun', null)
+  /** 任何后台任务完成都 +1 ⇒ 列表/评分卡自动刷新 */
+  const taskVersion = useTaskVersion()
+
+  const { data: card, refresh: refreshCard } = useAsync(() => scorecardApi.default(), [taskVersion])
+  const { data: list, refresh: refreshList } = useAsync(
+    () => opportunityApi.list({ sort: 'score', limit: 50 }),
+    [taskVersion],
+  )
+
+  const opportunities = list?.opportunities ?? []
+
+  /**
+   * 回退值要**校验存在性**：卡片可能已被删除/清空。
+   * 列表还没回来时先乐观用着它（否则会闪一下「未选择」）。
+   */
+  const fallbackId = useMemo(() => {
+    if (!lastOppId) return undefined
+    if (!list) return lastOppId
+    return opportunities.some((o) => o.id === lastOppId) ? lastOppId : undefined
+  }, [lastOppId, list, opportunities])
+
+  const selectedId = urlId ?? fallbackId
 
   /** 七 Agent 分析跑在应用级任务注册表里 —— **按机会卡片分别记**，
    *  这是全站最贵的一次操作（接真实模型约 47s），用户不该被钉在页面上等。 */
   const analyzeKey = `scorecard:analyze:${selectedId ?? 'none'}`
   const analyzeTask = useTask<AnalyzeResult>(analyzeKey)
   const analyzing = analyzeTask?.status === 'running'
-  const taskVersion = useTaskVersion()
 
   /** 只有「当前选中的机会卡片」的上一次运行结果才展示，否则串台误导 */
   const currentRun = lastRun && selectedId && lastRun.opportunityId === selectedId ? lastRun : null
@@ -95,11 +148,12 @@ export default function Scorecard() {
     [profileUsed],
   )
 
-  const { data: card, refresh: refreshCard } = useAsync(() => scorecardApi.default(), [taskVersion])
-  const { data: list, refresh: refreshList } = useAsync(
-    () => opportunityApi.list({ sort: 'score', limit: 50 }),
-    [taskVersion],
-  )
+  /** URL 里带了机会卡片 ⇒ 记下来，供下次从菜单进来时回退 */
+  useEffect(() => {
+    if (urlId && urlId !== lastOppId) setLastOppId(urlId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlId])
+
   const { data: detail, refresh: refreshDetail } = useAsync(
     () => (selectedId ? opportunityApi.detail(selectedId) : Promise.resolve(null)),
     [selectedId],
@@ -109,16 +163,15 @@ export default function Scorecard() {
     [selectedId, detail?.updated_at],
   )
 
-  const opportunities = list?.opportunities ?? []
   const current = useMemo(
     () => opportunities.find((o) => o.id === selectedId),
     [opportunities, selectedId],
   )
 
-  useEffect(() => {
-    setLocalWeights(null)
-    setPreview(null)
-  }, [selectedId])
+  /* 权重草稿与预览都按机会卡片取 —— 换卡即自动「各看各的」，无需重置副作用 */
+  const localWeights =
+    weightsDraft && weightsDraft.opportunityId === selectedId ? weightsDraft.values : null
+  const preview = previewState && previewState.opportunityId === selectedId ? previewState : null
 
   const activeScore = preview?.total_score ?? score?.total_score ?? 0
   const activeDimensions: ScoreDimension[] =
@@ -180,7 +233,11 @@ export default function Scorecard() {
     if (!selectedId) return
     try {
       const res = await opportunityApi.preview(selectedId, weights)
-      setPreview({ total_score: res.total_score, explained: res.explained })
+      setPreviewState({
+        opportunityId: selectedId!,
+        total_score: res.total_score,
+        explained: res.explained,
+      })
     } catch {
       message.error('预览失败：该机会尚未分析')
     }
@@ -195,15 +252,19 @@ export default function Scorecard() {
     }
     const res = await scorecardApi.updateWeights(card.id, localWeights, '页面人工调整权重')
     message.success(`权重已保存为 ${res.version}，重算 ${res.recalculated_opportunities} 个机会`)
-    setLocalWeights(null)
-    setPreview(null)
+    // 已落库 ⇒ 草稿与预览都作废（留着会被当成「改过但没保存」）
+    setWeightsDraft(null)
+    setPreviewState(null)
+    setWeightsOpen(false)
     await Promise.all([refreshCard(), refreshList(), refreshDetail()])
   }
 
+  /** 打开权重弹窗；若该机会卡片有未保存的草稿，直接接着改 */
   const weightModal = () => {
     if (!card) return
     const base = localWeights ?? card.weights
-    setLocalWeights({ ...base })
+    setWeightsDraft({ opportunityId: selectedId ?? '', values: { ...base } })
+    setWeightsOpen(true)
   }
 
   return (
@@ -565,8 +626,8 @@ export default function Scorecard() {
 
       <Modal
         title="配置评分卡权重"
-        open={localWeights !== null}
-        onCancel={() => setLocalWeights(null)}
+        open={weightsOpen}
+        onCancel={() => setWeightsOpen(false)}
         onOk={saveWeights}
         okText="保存并重算排序"
         width={560}
@@ -586,7 +647,10 @@ export default function Scorecard() {
                   max={50}
                   value={Math.round((localWeights[d.key] ?? 0) * 100)}
                   onChange={(v) =>
-                    setLocalWeights({ ...localWeights, [d.key]: Number((v / 100).toFixed(4)) })
+                    setWeightsDraft({
+                      opportunityId: selectedId ?? '',
+                      values: { ...localWeights, [d.key]: Number((v / 100).toFixed(4)) },
+                    })
                   }
                 />
               </Form.Item>

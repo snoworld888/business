@@ -531,6 +531,103 @@ async function main() {
   )
   const back2 = await cdp.eval(`document.body.innerText`)
   check('★ 回到页面自动认领结果（不必重跑）', adopted && !back2.includes('尚未执行分析'))
+
+  /* ---- 10. 赛道评分：选中的机会卡片 / 权重草稿 / 预览 都要留得住 ---- */
+  const opps = (await api('/opportunities?sort=score&limit=5', auth.access_token)).opportunities ?? []
+  const opp = opps[0]
+  if (!opp) {
+    console.log('  ⚠️ 没有已评分的机会卡片，跳过赛道评分场景')
+  } else {
+    await cdp.eval(`location.hash = '#/scorecard?opportunity=${opp.id}'`)
+    await cdp.waitForText('排序对比', 25_000)
+    // 卡片详情是异步拉的：等标题真正渲染出来再断言（否则测的是加载态）
+    await cdp.waitForText(opp.title, 20_000)
+    const titleIn = await cdp.eval(`document.body.innerText.includes(${JSON.stringify(opp.title)})`)
+    check('已选中目标机会卡片', titleIn, opp.title)
+
+    // 权重弹窗需要评分卡已加载（未加载时按钮是 disabled）
+    await cdp.waitFor(`(() => {
+      const b = [...document.querySelectorAll('button')].find(e => e.innerText.includes('配置权重'))
+      return Boolean(b) && !b.disabled
+    })()`, 15_000)
+    // 打开权重弹窗，用方向键改一个维度（antd Slider 支持键盘 ⇒ 触发 onChange）
+    await cdp.clickByText('button', '配置权重')
+    const slidersUp = await cdp.waitFor(`document.querySelectorAll('.ant-slider-handle').length > 0`, 10_000)
+    check('权重弹窗已打开', slidersUp,
+      `滑块 ${await cdp.eval(`document.querySelectorAll('.ant-slider-handle').length`)} 个`)
+    const labelOfFirst = `(document.querySelector('.ant-form-item-label') || {}).innerText`
+    const beforeLabel = await cdp.eval(labelOfFirst)
+    // antd Slider 的方向键在 CDP 合成事件下不生效（缺 keyCode），
+    // 改为在滑轨上按下鼠标 —— rc-slider 会按坐标换算取值
+    await cdp.eval(`(() => {
+      const rail = document.querySelectorAll('.ant-slider')[0]
+      if (!rail) return false
+      const r = rail.getBoundingClientRect()
+      const opt = { bubbles: true, cancelable: true,
+        clientX: r.left + r.width * 0.8, clientY: r.top + r.height / 2 }
+      for (const t of ['mousedown', 'mousemove', 'mouseup']) {
+        rail.dispatchEvent(new MouseEvent(t, opt))
+      }
+      return true
+    })()`)
+    await sleep(400)
+    const afterLabel = await cdp.eval(labelOfFirst)
+    check('权重草稿已改动', afterLabel !== beforeLabel, `${beforeLabel} → ${afterLabel}`)
+    const scKeys = await cdp.eval(
+      `Object.keys(sessionStorage).filter(k => k.includes('scorecard:')).sort().join(',')`,
+    )
+    check('权重草稿已落会话态', scKeys.includes('weightsDraft'), scKeys)
+
+    // 顺带算一次预览（预览也要跨页保留）
+    await cdp.clickByText('button', '预览排序影响')
+    await sleep(1500)
+    const hasPreview = await cdp.eval(`document.body.innerText.includes('预览评分')`)
+    check('权重预览可计算', hasPreview)
+
+    // 关闭弹窗（不保存）—— 用右上角 X：中文取消按钮的文案可能带空格，按文本点不稳
+    await cdp.eval(`(() => {
+      const x = document.querySelector('.ant-modal-close')
+      if (!x) return false
+      for (const t of ['mousedown', 'mouseup', 'click']) {
+        x.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window }))
+      }
+      return true
+    })()`)
+    await sleep(500)
+
+    // 切走再回来 —— **从左侧菜单进，URL 不带 query**
+    await cdp.clickByText('.ant-menu-item', '趋势雷达')
+    await cdp.waitForText('重新扫描', 25_000)
+    await cdp.clickByText('.ant-menu-item', '赛道评分')
+    await cdp.waitForText('排序对比', 25_000)
+    await sleep(800)
+    const urlNow = await cdp.eval(`location.hash`)
+    const backTitle = await cdp.eval(`document.body.innerText.includes(${JSON.stringify(opp.title)})`)
+    check('★ 从菜单回来仍选中原机会卡片', backTitle && !String(urlNow).includes('opportunity'),
+      `URL = ${urlNow}`)
+    check('★ 空态未出现（未回到「尚未选择机会」）',
+      !(await cdp.eval(`document.body.innerText.includes('尚未选择机会')`)))
+    check('★ 权重弹窗未自动弹出（草稿恢复 ≠ 弹窗自动开）',
+      (await cdp.eval(`document.querySelectorAll('.ant-modal-content').length`)) === 0)
+
+    await cdp.clickByText('button', '配置权重')
+    await sleep(600)
+    const reopenedLabel = await cdp.eval(labelOfFirst)
+    check('★ 权重草稿被恢复', reopenedLabel === afterLabel, `${reopenedLabel}`)
+    check('★ 权重预览也被恢复',
+      await cdp.eval(`document.body.innerText.includes('预览评分')`))
+    const shot4 = join(ROOT, 'docs', '赛道评分-会话态保持-验证.png')
+    const cap4 = await cdp.send('Page.captureScreenshot', { format: 'png' })
+    writeFileSync(shot4, Buffer.from(cap4.data, 'base64'))
+    console.log(`截图：${shot4}`)
+    await cdp.eval(`(() => {
+      const x = document.querySelector('.ant-modal-close')
+      if (x) for (const t of ['mousedown', 'mouseup', 'click'])
+        x.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window }))
+      return true
+    })()`)
+    await sleep(300)
+  }
 }
 
 async function cleanup() {
