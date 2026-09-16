@@ -12,7 +12,6 @@ import {
   Statistic,
   Tag,
   Typography,
-  message,
 } from 'antd'
 import { PlayCircleOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
@@ -20,6 +19,7 @@ import PageHead from '../components/PageHead'
 import { EmptyState, SIGNAL_TYPE_LABEL, formatClock } from '../components/widgets'
 import { usePersistentState } from '../hooks/usePersistentState'
 import { useAsync } from '../hooks/useAuth'
+import { runTask, clearTask, useTask } from '../api/taskStore'
 import { readSessionState } from '../api/uiState'
 import { demandApi, signalApi } from '../api/client'
 import type { DemandProbe } from '../api/types'
@@ -65,10 +65,12 @@ export default function Demand() {
     'demand:industry',
     'AI+制造',
   )
-  const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [result, setResult] = usePersistentState<DemandProbe | null>('demand:result', null)
   const [lastRun, setLastRun] = usePersistentState<DemandRun | null>('demand:lastRun', null)
+  /** 探针跑在应用级任务注册表里 —— 切页不会中断，回来仍能认领结果 */
+  const probe = useTask<DemandProbe>('demand:probe')
+  const loading = probe?.status === 'running'
 
   /** 信号库里各类型的存量 —— 用来解释「为什么结果是 0 条」，也用于补默认数据源 */
   const { data: signalPool } = useAsync(() => signalApi.list({ limit: 1 }), [])
@@ -146,31 +148,62 @@ export default function Demand() {
     )
   }, [lastRun, keywords, sources, industry])
 
+  /**
+   * 跑探针。**不等待、不阻塞页面**：任务挂在应用级注册表上，
+   * 用户随时可以切走，跑完会弹全局通知，回到本页自动认领结果。
+   */
   const run = async () => {
-    setLoading(true)
     setProgress(10)
-    const timer = setInterval(() => setProgress((p) => Math.min(92, p + 12)), 160)
-    try {
-      const res = await demandApi.probe({ keywords, sources, industry })
-      setResult(res)
-      setLastRun({
-        at: new Date().toISOString(),
-        keywords: [...keywords],
-        sources: [...sources],
-        industry,
-      })
-      setProgress(100)
-      message.success(`分析完成，匹配 ${res.matched_signals ?? 0} 条信号`)
-    } finally {
-      clearInterval(timer)
-      setLoading(false)
-    }
+    await runTask<DemandProbe>(
+      'demand:probe',
+      {
+        page: '需求探针',
+        title: '需求分析',
+        params: { keywords, sources, industry },
+      },
+      () => demandApi.probe({ keywords, sources, industry }),
+      {
+        summarize: (r) =>
+          `匹配 ${r.matched_signals ?? 0} 条信号，聚类 ${(r.pain_points ?? []).length} 类痛点，` +
+          `综合强度 ${r.demand_score_5}`,
+      },
+    )
   }
+
+  /** 进度条只是「还在跑」的视觉反馈，不做精确进度（切页回来同样能重新拉起） */
+  useEffect(() => {
+    if (!loading) {
+      setProgress(0)
+      return
+    }
+    setProgress(10)
+    const timer = setInterval(() => setProgress((p) => Math.min(92, p + 12)), 600)
+    return () => clearInterval(timer)
+  }, [loading])
+
+  /**
+   * 认领任务结果 —— 无论任务是「本页完成」还是「用户离开期间完成」都走这里，
+   * 因此结果与它对应的检索条件（任务自带的 `meta.params`）一起落到页面状态。
+   */
+  useEffect(() => {
+    if (!probe || probe.status !== 'done' || !probe.result) return
+    const p = probe.meta.params as Partial<DemandRun> | undefined
+    setResult(probe.result)
+    setLastRun({
+      at: probe.finishedAt ?? probe.startedAt,
+      keywords: p?.keywords ?? [],
+      sources: p?.sources ?? [],
+      industry: p?.industry,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [probe?.finishedAt, probe?.status])
 
   const clearResult = () => {
     setResult(null)
     setLastRun(null)
     setProgress(0)
+    // 连任务一起清：否则下次进来「认领任务结果」会把刚清掉的结果又捞回来
+    clearTask('demand:probe')
   }
 
   /**

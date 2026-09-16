@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Badge,
@@ -22,6 +22,7 @@ import { DatabaseOutlined, CloudDownloadOutlined, PlusOutlined, ReloadOutlined, 
 import PageHead from '../components/PageHead'
 import { adminApi, metaApi, signalApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 
 const ROLE_LABEL: Record<string, string> = {
   admin: '管理员',
@@ -32,35 +33,52 @@ const ROLE_LABEL: Record<string, string> = {
 }
 
 /** P11 设置（《原型设计》§5.11） */
+/** 从客户端推导响应类型，避免手写重复的下游契约 */
+type CollectReport = Awaited<ReturnType<typeof signalApi.collect>>
+type ReindexResult = Awaited<ReturnType<typeof signalApi.reindex>>
+
 export default function Settings() {
   const [inviteOpen, setInviteOpen] = useState(false)
   const [form] = Form.useForm()
-  const [reindexing, setReindexing] = useState(false)
-  const [collecting, setCollecting] = useState(false)
+  /** 采集 / 重建索引都跑在应用级任务注册表里：切页不中断，回来仍能认领结果 */
+  const collectTask = useTask<CollectReport>('signals:collect')
+  const collecting = collectTask?.status === 'running'
+  const reindexTask = useTask<ReindexResult>('settings:reindex')
+  const reindexing = reindexTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
   const { data: users, refresh: refreshUsers } = useAsync(() => adminApi.users(), [])
   const { data: roles } = useAsync(() => adminApi.roles(), [])
-  const { data: sources, refresh: refreshSources } = useAsync(() => signalApi.sources(), [])
-  const { data: adapters, refresh: refreshAdapters } = useAsync(() => signalApi.adapters(), [])
+  const { data: sources, refresh: refreshSources } = useAsync(() => signalApi.sources(), [taskVersion])
+  const { data: adapters, refresh: refreshAdapters } = useAsync(() => signalApi.adapters(), [taskVersion])
   const { data: model } = useAsync(() => metaApi.modelConfig(), [])
   const { data: logs, refresh: refreshLogs } = useAsync(() => adminApi.auditLogs(100), [])
 
-  /** 触发一轮真实采集（《技术文档》§3.1）。完整报告见「信号库」页。 */
+  /**
+   * 触发一轮真实采集（《技术文档》§3.1）。完整报告见「信号库」页。
+   *
+   * ⚠️ 与「信号库」页**共用同一个任务键** —— 两处点的是同一件事，
+   * 共用后既不会并发跑两遍，也能看到对方发起的采集正在进行中。
+   */
   const collect = async () => {
-    setCollecting(true)
-    try {
-      const res = await signalApi.collect({ limit_per_source: 10 })
-      message.success(
-        `采集完成：新增 ${res.total_inserted} 条，去重 ${res.total_duplicated} 条（${res.elapsed_ms} ms）`,
-      )
-      refreshSources()
-      refreshAdapters()
-    } catch {
-      message.error('采集失败，请查看后端日志')
-    } finally {
-      setCollecting(false)
-    }
+    await runTask<CollectReport>(
+      'signals:collect',
+      { page: '信号采集', title: '采集信号', params: { source: '设置页' } },
+      () => signalApi.collect({ limit_per_source: 10 }),
+      {
+        summarize: (r) =>
+          `新增 ${r.total_inserted} 条，去重 ${r.total_duplicated} 条（${r.elapsed_ms} ms）`,
+      },
+    )
   }
+
+  /** 认领采集结果（本页不弹报告，只刷新数据源统计；报告在「信号库」页看） */
+  useEffect(() => {
+    if (!collectTask || collectTask.status !== 'done' || !collectTask.result) return
+    refreshSources()
+    refreshAdapters()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectTask?.finishedAt, collectTask?.status])
 
   const invite = async () => {
     const values = await form.validateFields()
@@ -73,18 +91,24 @@ export default function Settings() {
     await refreshUsers()
   }
 
+  /** 索引重建较慢（要重新灌向量库 + 重建图谱），同样走后台任务 */
   const reindex = async () => {
-    setReindexing(true)
-    try {
-      const res = await signalApi.reindex()
-      message.success(
-        `索引重建完成：${res.indexed_documents} 篇文档，图谱 ${res.graph.nodes} 节点 / ${res.graph.edges} 边`,
-      )
-      await Promise.all([refreshSources(), refreshLogs()])
-    } finally {
-      setReindexing(false)
-    }
+    await runTask<ReindexResult>(
+      'settings:reindex',
+      { page: '设置', title: '重建索引' },
+      () => signalApi.reindex(),
+      {
+        summarize: (r) =>
+          `${r.indexed_documents} 篇文档，图谱 ${r.graph.nodes} 节点 / ${r.graph.edges} 边`,
+      },
+    )
   }
+
+  useEffect(() => {
+    if (!reindexTask || reindexTask.status !== 'done' || !reindexTask.result) return
+    void Promise.all([refreshSources(), refreshLogs()])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reindexTask?.finishedAt, reindexTask?.status])
 
   const tabItems = [
     {

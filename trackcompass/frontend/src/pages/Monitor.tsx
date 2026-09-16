@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Button,
@@ -26,6 +26,7 @@ import PageHead from '../components/PageHead'
 import { EmptyState } from '../components/widgets'
 import { monitorApi, opportunityApi, scorecardApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type { Alert as AlertModel, Replay } from '../api/types'
 
 const LEVEL_META: Record<string, { color: string; label: string }> = {
@@ -35,14 +36,20 @@ const LEVEL_META: Record<string, { color: string; label: string }> = {
 }
 
 /** P10 监控复盘（《原型设计》§5.10） */
+/** 预警扫描的响应类型 —— 从客户端推导，避免手写重复的下游契约 */
+type ScanResult = Awaited<ReturnType<typeof monitorApi.scan>>
+
 export default function Monitor() {
   const [tab, setTab] = useState<'alerts' | 'replay' | 'calibration'>('alerts')
   const [statusFilter, setStatusFilter] = useState<'pending' | 'handled' | 'ignored'>('pending')
   const [replayTarget, setReplayTarget] = useState<string>()
   const [replayForm] = Form.useForm()
-  const [scanning, setScanning] = useState(false)
+  /** 预警扫描任务（与按钮联动；任务在应用级注册表里跑，切页不中断） */
+  const scanTask = useTask<ScanResult>('monitor:scan')
+  const scanning = scanTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
-  const { data: alerts, loading, refresh } = useAsync(() => monitorApi.list(), [])
+  const { data: alerts, loading, refresh } = useAsync(() => monitorApi.list(), [taskVersion])
   const { data: replays, refresh: refreshReplays } = useAsync(
     async () => (await monitorApi.replays()).replays,
     [],
@@ -69,16 +76,22 @@ export default function Monitor() {
     await refresh()
   }
 
+  /** 预警扫描跑在应用级任务注册表里：切页不中断，回来仍能认领结果 */
   const scan = async () => {
-    setScanning(true)
-    try {
-      const res = await monitorApi.scan()
-      message.success(`扫描 ${res.scanned_signals} 条信号，新增 ${res.new_alerts} 条预警`)
-      await Promise.all([refresh(), refreshCalibration()])
-    } finally {
-      setScanning(false)
-    }
+    await runTask<ScanResult>(
+      'monitor:scan',
+      { page: '监控复盘', title: '扫描预警' },
+      () => monitorApi.scan(),
+      { summarize: (r) => `扫描 ${r.scanned_signals} 条信号，新增 ${r.new_alerts} 条预警` },
+    )
   }
+
+  /** 认领扫描结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!scanTask || scanTask.status !== 'done' || !scanTask.result) return
+    void Promise.all([refresh(), refreshCalibration()])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanTask?.finishedAt, scanTask?.status])
 
   const submitReplay = async () => {
     const values = await replayForm.validateFields()

@@ -29,12 +29,16 @@ import { EmptyState, RankingBars, formatClock } from '../components/widgets'
 import { opportunityApi, scorecardApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { usePersistentState } from '../hooks/usePersistentState'
+import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type {
   AgentTraceItem,
   OpportunityScore,
   ProfileUsed,
   ScoreDimension,
 } from '../api/types'
+
+/** 七 Agent 分析的响应类型 —— 从客户端推导，避免手写重复的下游契约 */
+type AnalyzeResult = Awaited<ReturnType<typeof opportunityApi.analyze>>
 
 /** 画像字段 → 中文名（「本次分析依据」表用） */
 const PROFILE_FIELD_LABEL: Record<string, string> = {
@@ -68,11 +72,17 @@ export default function Scorecard() {
   const navigate = useNavigate()
   const selectedId = params.get('opportunity') ?? undefined
 
-  const [analyzing, setAnalyzing] = useState(false)
   const [evidenceOpen, setEvidenceOpen] = useState(false)
   const [localWeights, setLocalWeights] = useState<Record<string, number> | null>(null)
   const [preview, setPreview] = useState<{ total_score: number; explained?: OpportunityScore['explained'] } | null>(null)
   const [lastRun, setLastRun] = usePersistentState<AnalysisRun | null>('scorecard:lastRun', null)
+
+  /** 七 Agent 分析跑在应用级任务注册表里 —— **按机会卡片分别记**，
+   *  这是全站最贵的一次操作（接真实模型约 47s），用户不该被钉在页面上等。 */
+  const analyzeKey = `scorecard:analyze:${selectedId ?? 'none'}`
+  const analyzeTask = useTask<AnalyzeResult>(analyzeKey)
+  const analyzing = analyzeTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
   /** 只有「当前选中的机会卡片」的上一次运行结果才展示，否则串台误导 */
   const currentRun = lastRun && selectedId && lastRun.opportunityId === selectedId ? lastRun : null
@@ -85,10 +95,10 @@ export default function Scorecard() {
     [profileUsed],
   )
 
-  const { data: card, refresh: refreshCard } = useAsync(() => scorecardApi.default(), [])
+  const { data: card, refresh: refreshCard } = useAsync(() => scorecardApi.default(), [taskVersion])
   const { data: list, refresh: refreshList } = useAsync(
     () => opportunityApi.list({ sort: 'score', limit: 50 }),
-    [],
+    [taskVersion],
   )
   const { data: detail, refresh: refreshDetail } = useAsync(
     () => (selectedId ? opportunityApi.detail(selectedId) : Promise.resolve(null)),
@@ -118,36 +128,53 @@ export default function Scorecard() {
 
   const radarData = activeDimensions.map((d) => ({ name: d.name, value: d.score }))
 
+  /**
+   * 重跑七 Agent 分析。**不阻塞页面**：任务挂在应用级注册表上，
+   * 用户可以立刻切走去干别的，跑完弹全局通知，回来自动认领明细。
+   */
   const handleAnalyze = async () => {
     if (!selectedId) {
       message.warning('请先选择一个机会卡片')
       return
     }
-    setAnalyzing(true)
-    try {
-      const res = await opportunityApi.analyze(selectedId, {
-        industry: current?.track ?? undefined,
-        days: 3650,
-        max_loops: 1,
-        persist: true,
-      })
-      setLastRun({
-        opportunityId: selectedId,
-        at: new Date().toISOString(),
-        trace: res.trace as AgentTraceItem[],
-        profileUsed: res.profile_used ?? null,
-      })
-      const engines = new Set(res.trace.map((t) => (t as AgentTraceItem).engine ?? 'rule-engine'))
-      const engineLabel = engines.has('llm') ? '真实大模型' : '规则引擎'
-      message.success(
-        `七 Agent 分析完成（${res.trace.length} 个 Agent · ${engineLabel} · ${res.signal_count} 条信号），综合评分 ${res.total_score}`,
-      )
-      await Promise.all([refreshList(), refreshDetail()])
-      navigate(`/scorecard?opportunity=${selectedId}`, { replace: true })
-    } finally {
-      setAnalyzing(false)
-    }
+    await runTask<AnalyzeResult>(
+      analyzeKey,
+      {
+        page: '赛道评分',
+        title: '七 Agent 分析',
+        params: { opportunity: detail?.title ?? selectedId, industry: current?.track },
+      },
+      () =>
+        opportunityApi.analyze(selectedId, {
+          industry: current?.track ?? undefined,
+          days: 3650,
+          max_loops: 1,
+          persist: true,
+        }),
+      {
+        summarize: (r) => {
+          const engines = new Set(r.trace.map((t) => (t as AgentTraceItem).engine ?? 'rule-engine'))
+          return (
+            `${r.trace.length} 个 Agent · ${engines.has('llm') ? '真实大模型' : '规则引擎'} · ` +
+            `${r.signal_count} 条信号 → 综合评分 ${r.total_score}`
+          )
+        },
+      },
+    )
   }
+
+  /** 认领分析结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!analyzeTask || analyzeTask.status !== 'done' || !analyzeTask.result) return
+    const res = analyzeTask.result
+    setLastRun({
+      opportunityId: selectedId!,
+      at: analyzeTask.finishedAt ?? analyzeTask.startedAt,
+      trace: res.trace as AgentTraceItem[],
+      profileUsed: res.profile_used ?? null,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [analyzeTask?.finishedAt, analyzeTask?.status])
 
   const handlePreview = async (weights: Record<string, number>) => {
     if (!selectedId) return

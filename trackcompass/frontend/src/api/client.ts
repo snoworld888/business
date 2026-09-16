@@ -5,6 +5,7 @@
 import axios, { type AxiosRequestConfig } from 'axios'
 import { message } from 'antd'
 import { clearSessionState } from './uiState'
+import { resetTaskStore } from './taskStore'
 import type {
   AgentCatalogItem,
   Alert,
@@ -55,9 +56,10 @@ export const storage = {
   clear: () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
-    // 会话级 UI 状态（需求探针结果 / 趋势扫描结果 / 七 Agent 分析明细）必须一起清：
+    // 会话级 UI 状态（需求探针结果 / 趋势扫描结果 / 七 Agent 分析明细 / 后台任务）必须一起清：
     // 否则换个账号登录后，上一个账号的分析结果仍留在页面上
     clearSessionState()
+    resetTaskStore()
   },
 }
 

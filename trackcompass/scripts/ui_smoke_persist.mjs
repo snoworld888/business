@@ -475,6 +475,62 @@ async function main() {
   check('「丢弃草稿」清提示并还原已保存值',
     !afterDiscard.alert && afterDiscard.founded !== MARK,
     `成立时间 = ${afterDiscard.founded}`)
+
+  /* ---- 9. 并行：离开页面后任务继续跑，回来自动认领结果 ---- */
+  // 用随机关键词保证**缓存未命中**（命中的话 0.3s 就返回，观察不到「进行中」）
+  const burstKw = `并行冒烟${Math.random().toString(36).slice(2, 6)}`
+  await cdp.eval(`(() => {
+    sessionStorage.setItem('tc:ui:demand:keywords', ${JSON.stringify(JSON.stringify([burstKw]))})
+    sessionStorage.removeItem('tc:ui:demand:result')
+    sessionStorage.removeItem('tc:ui:demand:lastRun')
+    sessionStorage.removeItem('tc:ui:task:demand:probe')
+    return 'ok'
+  })()`)
+  await cdp.eval(`location.hash = '#/demand'`)
+  await cdp.send('Page.reload')
+  await cdp.waitFor(`document.readyState === 'complete'`, 20_000)
+  await sleep(800)
+  await cdp.eval(`location.hash = '#/demand'`)
+  await cdp.waitForText('开始分析', 25_000)
+  const idle = await cdp.eval(`document.body.innerText.includes('尚未执行分析')`)
+  check('需求探针已回到空态（便于验证「结果是被认领回来的」）', idle)
+
+  const t1 = Date.now()
+  await cdp.clickByText('button', '开始分析')
+  // 不等结果，立刻切走
+  await cdp.clickByText('.ant-menu-item', '趋势雷达')
+  await cdp.waitForText('重新扫描', 25_000)
+  const sawTaskIndicator = await cdp.waitFor(
+    `document.body.innerText.includes('个任务后台运行中')`,
+    15_000,
+  )
+  check('★ 顶栏显示「任务后台运行中」（切页后仍在跑）', sawTaskIndicator)
+
+  const sawNotice = await cdp.waitFor(
+    `[...document.querySelectorAll('.ant-notification-notice')]
+       .some(e => e.innerText.includes('需求分析完成'))`,
+    240_000,
+  )
+  check('★ 在别的页面收到「需求分析完成」全局通知', sawNotice,
+    `耗时 ${((Date.now() - t1) / 1000).toFixed(1)}s（含真实模型推理）`)
+
+  const shot3 = join(ROOT, 'docs', '跨页并行-任务运行与通知-验证.png')
+  const cap3 = await cdp.send('Page.captureScreenshot', { format: 'png' })
+  writeFileSync(shot3, Buffer.from(cap3.data, 'base64'))
+  console.log(`截图：${shot3}`)
+
+  const taskJson = await cdp.eval(`sessionStorage.getItem('tc:ui:task:demand:probe')`)
+  const task = JSON.parse(taskJson || '{}')
+  check('任务状态已落会话态（离开页面也未中断）', task.status === 'done' && !!task.result,
+    `status=${task.status} 参数=${JSON.stringify(task.meta?.params)}`)
+
+  await cdp.clickByText('.ant-menu-item', '需求探针')
+  await cdp.waitForText('开始分析', 25_000)
+  const adopted = await cdp.waitFor(
+    `document.body.innerText.includes('上次分析')`, 10_000,
+  )
+  const back2 = await cdp.eval(`document.body.innerText`)
+  check('★ 回到页面自动认领结果（不必重跑）', adopted && !back2.includes('尚未执行分析'))
 }
 
 async function cleanup() {

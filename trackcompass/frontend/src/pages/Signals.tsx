@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Badge,
@@ -17,7 +17,6 @@ import {
   Tag,
   Tooltip,
   Typography,
-  message,
 } from 'antd'
 import {
   CloudDownloadOutlined,
@@ -30,7 +29,15 @@ import PageHead from '../components/PageHead'
 import { SIGNAL_TYPE_LABEL } from '../components/widgets'
 import { signalApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { clearTask, runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type { CollectReport, Signal, SourceAdapter } from '../api/types'
+
+/** 采集完成通知的文案（页内提示与全局通知共用一份，避免两处措辞漂移） */
+function collectSummary(r: CollectReport): string {
+  return r.dry_run
+    ? `干跑完成：抓取 ${r.total_fetched} 条，未写库`
+    : `采集完成：新增 ${r.total_inserted} 条，去重 ${r.total_duplicated} 条（${r.elapsed_ms} ms）`
+}
 
 const TYPE_COLOR: Record<string, string> = {
   policy: 'red',
@@ -51,18 +58,21 @@ const TYPE_COLOR: Record<string, string> = {
  */
 export default function Signals() {
   const [type, setType] = useState<string>('all')
-  const [collecting, setCollecting] = useState(false)
   const [dryRun, setDryRun] = useState(false)
   const [report, setReport] = useState<CollectReport | null>(null)
   const [detail, setDetail] = useState<Signal | null>(null)
+  /** 采集跑在应用级任务注册表里：切页不中断，回来仍能看到报告 */
+  const collectTask = useTask<CollectReport>('signals:collect')
+  const collecting = collectTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
   const { data, loading, refresh } = useAsync(
     () => signalApi.list({ signal_type: type === 'all' ? undefined : type, limit: 300 }),
-    [type],
+    [type, taskVersion],
   )
   const { data: adapterData, refresh: refreshAdapters } = useAsync(
     () => signalApi.adapters(),
-    [],
+    [taskVersion],
   )
 
   const signals = data?.signals ?? []
@@ -71,24 +81,29 @@ export default function Signals() {
   const availableAdapters = adapters.filter((a) => a.available)
 
   const handleCollect = async () => {
-    setCollecting(true)
-    try {
-      const res = await signalApi.collect({ dry_run: dryRun, limit_per_source: 10 })
-      setReport(res)
-      if (!res.dry_run) {
-        refresh()
-        refreshAdapters()
-      }
-      message.success(
-        res.dry_run
-          ? `干跑完成：抓取 ${res.total_fetched} 条，未写库`
-          : `采集完成：新增 ${res.total_inserted} 条，去重 ${res.total_duplicated} 条`,
-      )
-    } catch {
-      message.error('采集失败，请查看后端日志')
-    } finally {
-      setCollecting(false)
+    await runTask<CollectReport>(
+      'signals:collect',
+      { page: '信号库', title: '采集信号', params: { dry_run: dryRun } },
+      () => signalApi.collect({ dry_run: dryRun, limit_per_source: 10 }),
+      { summarize: (r) => collectSummary(r) },
+    )
+  }
+
+  /** 认领采集结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!collectTask || collectTask.status !== 'done' || !collectTask.result) return
+    setReport(collectTask.result)
+    if (!collectTask.result.dry_run) {
+      refresh()
+      refreshAdapters()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectTask?.finishedAt, collectTask?.status])
+
+  /** 关闭报告 = 已读 ⇒ 清掉任务，避免下次进来又自动弹一遍 */
+  const closeReport = () => {
+    setReport(null)
+    clearTask('signals:collect')
   }
 
   return (
@@ -362,8 +377,8 @@ export default function Signals() {
         open={!!report}
         title={report?.dry_run ? '采集报告（干跑·未写库）' : '采集报告'}
         width={760}
-        footer={<Button onClick={() => setReport(null)}>关闭</Button>}
-        onCancel={() => setReport(null)}
+        footer={<Button onClick={closeReport}>关闭</Button>}
+        onCancel={closeReport}
       >
         {report ? (
           <Space direction="vertical" size={12} style={{ width: '100%' }}>

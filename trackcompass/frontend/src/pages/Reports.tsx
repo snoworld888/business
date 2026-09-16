@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Button,
@@ -22,22 +22,32 @@ import PageHead from '../components/PageHead'
 import { EmptyState } from '../components/widgets'
 import { opportunityApi, reportApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type { Report } from '../api/types'
 
 /** P09 决策报告（《原型设计》§5.9） */
+/** 报告生成的响应类型 —— 从客户端推导，避免手写重复的下游契约 */
+type GeneratedReport = Awaited<ReturnType<typeof reportApi.create>>
+
 export default function Reports() {
   const [opportunityId, setOpportunityId] = useState<string>()
   const [template, setTemplate] = useState('investment_memo')
   const [format, setFormat] = useState('markdown')
-  const [generating, setGenerating] = useState(false)
   const [preview, setPreview] = useState<Report | null>(null)
+  /** 报告生成跑在应用级任务注册表里：文档生成要几秒，用户不必钉在页面上等 */
+  const generateTask = useTask<GeneratedReport>('reports:generate')
+  const generating = generateTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
   const { data: templates } = useAsync(() => reportApi.templates(), [])
   const { data: opportunities } = useAsync(
     async () => (await opportunityApi.list({ limit: 50 })).opportunities,
     [],
   )
-  const { data: reports, loading, refresh } = useAsync(async () => (await reportApi.list()).reports, [])
+  const { data: reports, loading, refresh } = useAsync(
+    async () => (await reportApi.list()).reports,
+    [taskVersion],
+  )
 
   const analyzeReady = (opportunities ?? []).filter(
     (o) => (o.total_score ?? 0) > 0,
@@ -48,16 +58,27 @@ export default function Reports() {
       message.warning('请先选择已完成分析的机会卡片')
       return
     }
-    setGenerating(true)
-    try {
-      const res = await reportApi.create({ opportunity_id: opportunityId, template, format })
-      setPreview(res)
-      message.success(`报告已生成 ${res.version}，含 ${res.evidence_count} 条证据引用`)
-      await refresh()
-    } finally {
-      setGenerating(false)
-    }
+    await runTask<GeneratedReport>(
+      'reports:generate',
+      {
+        page: '决策报告',
+        title: '生成决策报告',
+        params: { opportunity: opportunityId, template, format },
+      },
+      () => reportApi.create({ opportunity_id: opportunityId, template, format }),
+      {
+        summarize: (r) => `${r.version} · ${r.evidence_count} 条证据引用 · ${format.toUpperCase()}`,
+      },
+    )
   }
+
+  /** 认领生成结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!generateTask || generateTask.status !== 'done' || !generateTask.result) return
+    setPreview(generateTask.result)
+    void refresh()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [generateTask?.finishedAt, generateTask?.status])
 
   const exportAs = async (report: Report, fmt: string) => {
     const res = await reportApi.exportAs(report.id, fmt)

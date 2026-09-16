@@ -44,7 +44,29 @@
 - ⚠️ 该指令**只适用于本仓库**。EOS（`bq-eos-*`）是**多窗口共享 working tree**，仍由总指挥统一 commit/push
 - 历史：`0e651cb` Initial commit（2026-09-16 10:39，用户提交）→ `18aa311` 会话态保持 + 探针口径放宽
 
+### 跨页并行 / 后台任务（2026-09-16）
+
+- **核心事实**：服务端是同步接口，HTTP 请求**不会**因组件卸载而中断（活一定干完），
+  断点在**前端** —— 接结果的回调挂在页面组件上，组件一卸载响应就没人接
+- `api/taskStore.ts`（应用级任务注册表，模块级 Map + useSyncExternalStore）：
+  `runTask(key, meta, fn, opts)` 发起 / `useTask(key)` 认领 / `useRunningTasks()` 顶栏 /
+  `useTaskVersion()` 放进 `useAsync` 依赖 ⇒ **任务完成即自动刷新列表**
+- 已接入 **9 页 12 个手动操作**；任务键约定 `页面:动作`，**同一件事跨页共用键**
+  （`trends:scan` 三处、`signals:collect` 两处）⇒ 跨页防并发
+- 关键取舍：**不取消请求**（掐断=白干）/ 同 key 不并发 / 结果镜像 sessionStorage /
+  **残留 `running` 一律改判为「已中断」**（刷新页面会杀掉在飞请求，否则顶栏永远转圈骗人）/
+  完成弹全局 `notification`（唯一能跨页触达的方式）/ 任务自带 `meta.params` 留痕「按什么条件跑的」
+- 「弹窗类结果」的已读语义：关闭弹窗 = `clearTask`（否则下次进来又自动弹）
+- 实测耗时（写文档/判断「是否值得后台化」用）：
+  需求探针 **18.2s**（首次真实推理）/ 0.3s（同 prompt 缓存命中）；
+  七 Agent 分析 **47s**（真实模型，规则基线 418s）；采集 **4.9s**（6 源 40 条，1 源失败）；
+  趋势扫描 0.34s；报告生成 0.016s；实验创建/回写 0.016s/0.015s
+- ⚠️ **写测试要考虑 LLM 缓存**：同 prompt 命中缓存 0.3s 就返回，观察不到「进行中」⇒
+  冒烟用例用**随机关键词**制造缓存未命中
+- 文档：`docs/跨页并行与后台任务报告.md`
+
 ### 数据采集器（`backend/app/collector/`）
+
 
 - `base`(限流/重试/UA) · `normalize`(清洗/语言/行业/质量闸门) · `registry` · `runner` · `sources/` 5 模块
 - 统一入库口 `app/services/signal_ingest.py::persist_signals` —— API 与采集器共用，

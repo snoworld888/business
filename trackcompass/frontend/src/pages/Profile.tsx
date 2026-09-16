@@ -22,10 +22,11 @@ import { useNavigate } from 'react-router-dom'
 import PageHead from '../components/PageHead'
 import Radar from '../components/Radar'
 import { formatClock } from '../components/widgets'
+import { runTask } from '../api/taskStore'
 import { profileApi, trendApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { usePersistentState } from '../hooks/usePersistentState'
-import type { CompanyProfile, CompanyProfileSummary } from '../api/types'
+import type { CompanyProfile, CompanyProfileSummary, TrendScanResult } from '../api/types'
 
 interface FormValues {
   name: string
@@ -312,9 +313,18 @@ export default function Profile() {
     }
   }
 
-  const toOpportunityPool = async () => {
-    const res = await trendApi.scan({ industry: form.getFieldValue('industry') })
-    message.success(`扫描 ${res.scanned_signals} 条信号，生成 ${res.generated} 条趋势`)
+  /**
+   * 按画像开始扫描 —— 与「趋势雷达」页**共用同一个任务键**（点的是同一件事，不并发跑两遍）。
+   * **不等待**：立刻跳到趋势雷达，扫描在后台继续；跑完弹全局通知、列表自动刷新。
+   */
+  const toOpportunityPool = () => {
+    const industry = form.getFieldValue('industry')
+    void runTask<TrendScanResult>(
+      'trends:scan',
+      { page: '趋势雷达', title: '趋势扫描', params: { industry, from: '能力画像' } },
+      () => trendApi.scan({ industry }),
+      { summarize: (r) => `扫描 ${r.scanned_signals} 条信号，生成 ${r.generated} 条趋势` },
+    )
     navigate('/trends')
   }
 

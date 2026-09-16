@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -31,6 +31,7 @@ import { EmptyState, formatClock } from '../components/widgets'
 import { trendApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { usePersistentState } from '../hooks/usePersistentState'
+import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type { Trend, TrendScanResult } from '../api/types'
 
 const INDUSTRIES = ['AI+制造', 'AI+医疗', '新能源科技', '具身智能']
@@ -44,13 +45,17 @@ export default function Trends() {
   const navigate = useNavigate()
   const [industry, setIndustry] = usePersistentState<string | undefined>('trends:industry', undefined)
   const [direction, setDirection] = usePersistentState<string>('trends:direction', 'all')
-  const [scanning, setScanning] = useState(false)
   const [detail, setDetail] = useState<Trend | null>(null)
   const [scanResult, setScanResult] = usePersistentState<TrendScanResult | null>(
     'trends:scanResult',
     null,
   )
   const [scannedAt, setScannedAt] = usePersistentState<string | null>('trends:scannedAt', null)
+  /** 扫描跑在应用级任务注册表里：切页不中断，回来仍能认领结果 */
+  const scanTask = useTask<TrendScanResult>('trends:scan')
+  const scanning = scanTask?.status === 'running'
+  /** 任何后台任务完成都 +1 ⇒ 列表随之自动刷新（不必手点「重新扫描」旁的刷新） */
+  const taskVersion = useTaskVersion()
 
   const { data, loading, refresh } = useAsync(
     () =>
@@ -59,27 +64,35 @@ export default function Trends() {
         direction: direction === 'all' ? undefined : direction,
         limit: 100,
       }),
-    [industry, direction],
+    [industry, direction, taskVersion],
   )
 
   const trends = data?.trends ?? []
 
   const handleScan = async () => {
-    setScanning(true)
-    try {
-      const res = await trendApi.scan({ industry })
-      setScanResult(res)
-      setScannedAt(new Date().toISOString())
-      const gapN = res.capability_gaps?.length ?? 0
-      message.success(
-        `扫描 ${res.scanned_signals} 条信号，生成 ${res.generated} 条趋势` +
-          (gapN ? `；另有 ${gapN} 个能力词无外部信号支撑` : ''),
-      )
-      await refresh()
-    } finally {
-      setScanning(false)
-    }
+    await runTask<TrendScanResult>(
+      'trends:scan',
+      { page: '趋势雷达', title: '趋势扫描', params: { industry } },
+      () => trendApi.scan({ industry }),
+      {
+        summarize: (r) => {
+          const gapN = r.capability_gaps?.length ?? 0
+          return (
+            `扫描 ${r.scanned_signals} 条信号，生成 ${r.generated} 条趋势` +
+            (gapN ? `；另有 ${gapN} 个能力词无外部信号支撑` : '')
+          )
+        },
+      },
+    )
   }
+
+  /** 认领扫描结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!scanTask || scanTask.status !== 'done' || !scanTask.result) return
+    setScanResult(scanTask.result)
+    setScannedAt(scanTask.finishedAt ?? scanTask.startedAt)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanTask?.finishedAt, scanTask?.status])
 
   const addToPool = (t: Trend) => {
     Modal.confirm({

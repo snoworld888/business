@@ -1,5 +1,5 @@
 import { type ReactNode, useMemo } from 'react'
-import { Avatar, Badge, Dropdown, Layout, Menu, Space, Tag, Typography } from 'antd'
+import { Avatar, Badge, Dropdown, Layout, Menu, Space, Tag, Tooltip, Typography } from 'antd'
 import {
   AppstoreOutlined,
   BellOutlined,
@@ -9,6 +9,7 @@ import {
   FileTextOutlined,
   FundProjectionScreenOutlined,
   HeatMapOutlined,
+  LoadingOutlined,
   LogoutOutlined,
   ProfileOutlined,
   RadarChartOutlined,
@@ -18,6 +19,7 @@ import {
 } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { monitorApi } from '../api/client'
+import { useRunningTasks } from '../api/taskStore'
 import { useAsync, useAuth } from '../hooks/useAuth'
 
 const { Header, Sider, Content } = Layout
@@ -53,6 +55,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation()
   const { user, logout } = useAuth()
   const { data: alerts } = useAsync(() => monitorApi.list({ status: 'pending' }), [])
+  /** 正在后台跑的任务（趋势扫描 / 需求探针 / 七 Agent 分析…）——
+   *  放在顶栏是为了让用户敢离开页面：知道活还在跑、跑完了会通知。 */
+  const running = useRunningTasks()
 
   const selectedKey = useMemo(() => {
     const hit = NAV.find((n) => location.pathname.startsWith(n.key))
@@ -98,6 +103,23 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <Tag color="blue" className="tc-tag-soft">
             七 Agent 决策流水线
           </Tag>
+          {running.length ? (
+            <Tooltip
+              title={
+                <Space direction="vertical" size={2}>
+                  {running.map((t) => (
+                    <span key={t.key}>
+                      · {t.meta.page} · {t.meta.title}
+                    </span>
+                  ))}
+                </Space>
+              }
+            >
+              <Tag color="processing" className="tc-tag-soft" icon={<LoadingOutlined />}>
+                {running.length} 个任务后台运行中
+              </Tag>
+            </Tooltip>
+          ) : null}
           <div style={{ flex: 1 }} />
           <Space size={16}>
             <Badge count={pendingCount} size="small">

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Button,
@@ -29,7 +29,8 @@ import PageHead from '../components/PageHead'
 import { EmptyState, RankingBars, StatCard } from '../components/widgets'
 import { experimentApi, metaApi, monitorApi, opportunityApi, reportApi, trendApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
-import type { Opportunity } from '../api/types'
+import { clearTask, runTask, useTask, useTaskVersion } from '../api/taskStore'
+import type { Opportunity, TrendScanResult } from '../api/types'
 
 const LEVEL_META: Record<string, { color: string; label: string }> = {
   critical: { color: 'error', label: '严重' },
@@ -41,6 +42,10 @@ const LEVEL_META: Record<string, { color: string; label: string }> = {
 export default function Dashboard() {
   const navigate = useNavigate()
   const [tab, setTab] = useState<'opportunity' | 'engine'>('opportunity')
+  /** 趋势扫描跑在应用级任务注册表里：用户可以立刻去别的页面，跑完弹通知、回来自动弹结果 */
+  const scanTask = useTask<TrendScanResult>('trends:scan')
+  const scanning = scanTask?.status === 'running'
+  const taskVersion = useTaskVersion()
 
   const { data: opps, loading: loadingOpps } = useAsync(
     () => opportunityApi.list({ sort: 'score', limit: 20 }),
@@ -48,14 +53,28 @@ export default function Dashboard() {
   )
   const { data: alerts } = useAsync(() => monitorApi.list({ status: 'pending' }), [])
   const { data: experiments } = useAsync(async () => (await experimentApi.list()).experiments, [])
-  const { data: trends } = useAsync(() => trendApi.list({ limit: 8 }), [])
+  const { data: trends } = useAsync(() => trendApi.list({ limit: 8 }), [taskVersion])
   const { data: reports } = useAsync(async () => (await reportApi.list()).reports, [])
 
   const opportunities = opps?.opportunities ?? []
   const pendingAlerts = alerts?.alerts ?? []
 
   const handleScan = async () => {
-    const result = await trendApi.scan()
+    // 与「趋势雷达」页共用同一个任务键：两处点的是同一件事，避免并发跑两遍
+    await runTask<TrendScanResult>(
+      'trends:scan',
+      { page: '趋势雷达', title: '趋势扫描' },
+      () => trendApi.scan(),
+      {
+        summarize: (r) => `扫描 ${r.scanned_signals} 条信号，生成 ${r.generated} 条趋势`,
+      },
+    )
+  }
+
+  /** 认领扫描结果（本页完成 / 离开期间完成，同一条路径） */
+  useEffect(() => {
+    if (!scanTask || scanTask.status !== 'done' || !scanTask.result) return
+    const result = scanTask.result
     Modal.success({
       title: '趋势扫描完成',
       content: (
@@ -69,9 +88,17 @@ export default function Dashboard() {
           ))}
         </Space>
       ),
-      onOk: () => navigate('/trends'),
+      okText: '去趋势雷达',
+      cancelText: '知道了',
+      // 弹过即「已读」：清任务，避免下次进来又弹一遍
+      onOk: () => {
+        clearTask('trends:scan')
+        navigate('/trends')
+      },
+      onCancel: () => clearTask('trends:scan'),
     })
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanTask?.finishedAt, scanTask?.status])
 
   return (
     <>
@@ -80,7 +107,7 @@ export default function Dashboard() {
         desc="机会卡片、待办、预警与实验进度一览。所有数字均可下钻到原始信号。"
         extra={
           <Space>
-            <Button icon={<ThunderboltOutlined />} onClick={handleScan}>
+            <Button icon={<ThunderboltOutlined />} loading={scanning} onClick={handleScan}>
               开始趋势扫描
             </Button>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/profile')}>
