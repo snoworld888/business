@@ -4,6 +4,7 @@
  */
 import axios, { type AxiosRequestConfig } from 'axios'
 import { message } from 'antd'
+import { TOKEN_KEY, USER_KEY, resetAuthSnapshot } from './authStore'
 import { clearSessionState } from './uiState'
 import { resetTaskStore } from './taskStore'
 import type {
@@ -38,9 +39,6 @@ import type {
   WorkflowLayer,
 } from './types'
 
-const TOKEN_KEY = 'trackcompass_token'
-const USER_KEY = 'trackcompass_user'
-
 export const storage = {
   getToken: () => localStorage.getItem(TOKEN_KEY),
   setToken: (t: string) => localStorage.setItem(TOKEN_KEY, t),
@@ -56,6 +54,9 @@ export const storage = {
   clear: () => {
     localStorage.removeItem(TOKEN_KEY)
     localStorage.removeItem(USER_KEY)
+    // ⚠️ 内存里的认证快照必须同步清掉：否则 `App` 的 `isAuthenticated` 仍为 true，
+    // 401 之后会一边跳登录页、一边被守卫判为已登录（登出同理）
+    resetAuthSnapshot()
     // 会话级 UI 状态（需求探针结果 / 趋势扫描结果 / 七 Agent 分析明细 / 后台任务）必须一起清：
     // 否则换个账号登录后，上一个账号的分析结果仍留在页面上
     clearSessionState()

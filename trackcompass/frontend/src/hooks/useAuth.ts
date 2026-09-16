@@ -1,28 +1,36 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import { authApi, storage } from '../api/client'
-import type { UserInfo } from '../api/types'
+import { getAuthSnapshot, setAuthSnapshot, subscribeAuth } from '../api/authStore'
 
+/**
+ * 认证状态。
+ *
+ * ⚠️ 状态存放在**模块级单例**（`api/authStore`）里，不再用组件内 `useState`：
+ * `App`（路由守卫）与 `Login`（登录表单）都会调用本 hook，若各持一份 `useState`，
+ * 登录后 `App` 那份不会更新，`navigate('/dashboard')` 会被守卫立刻弹回登录页
+ * —— 现象就是「点登录不跳转」。
+ */
 export function useAuth() {
-  const [user, setUser] = useState<UserInfo | null>(() => storage.getUser())
-  const token = storage.getToken()
+  const { token, user } = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getAuthSnapshot)
 
   const login = useCallback(async (email: string, password: string) => {
     const result = await authApi.login(email, password)
     storage.setToken(result.access_token)
     storage.setUser(result.user)
-    setUser(result.user)
+    // 一次性写入共享快照：App 立刻看到已登录并放行 /dashboard
+    setAuthSnapshot(result.access_token, result.user)
     return result.user
   }, [])
 
   const logout = useCallback(() => {
+    // storage.clear() 内部会 resetAuthSnapshot() / 清会话态 / 清后台任务
     storage.clear()
-    setUser(null)
   }, [])
 
   const refresh = useCallback(async () => {
     const me = await authApi.me()
     storage.setUser(me)
-    setUser(me)
+    setAuthSnapshot(storage.getToken(), me)
     return me
   }, [])
 

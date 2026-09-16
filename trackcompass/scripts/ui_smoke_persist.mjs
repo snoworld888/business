@@ -66,6 +66,10 @@ class Cdp {
     this.ws = ws
     this.seq = 0
     this.pending = new Map()
+    /** 整页导航历史：用于识别「等待文本期间页面被重新加载」这类隐形失败 */
+    this.navigations = []
+    /** 页面控制台报错 */
+    this.errors = []
   }
 
   static async connect(url) {
@@ -77,6 +81,22 @@ class Cdp {
     const cdp = new Cdp(ws)
     ws.onmessage = (ev) => {
       const msg = JSON.parse(ev.data)
+      // ★ 整页导航（非 same-document）会让执行上下文销毁：
+      //   此时 `Runtime.evaluate` 抛错，若被 `.catch(() => '')` 吞掉，
+      //   诊断信息就退化成「页面文本为空」，看起来像白屏 —— 极易误判。
+      if (msg.method === 'Page.frameNavigated' && !msg.params?.frame?.parentId) {
+        cdp.navigations.push(msg.params.frame.url)
+      }
+      if (msg.method === 'Runtime.exceptionThrown') {
+        cdp.errors.push(
+          `[异常] ${msg.params?.exceptionDetails?.exception?.description ?? ''}`.slice(0, 300),
+        )
+      }
+      if (msg.method === 'Runtime.consoleAPICalled' && msg.params?.type === 'error') {
+        cdp.errors.push(
+          `[console.error] ${(msg.params.args ?? []).map((a) => a.value ?? a.description ?? '').join(' ')}`.slice(0, 300),
+        )
+      }
       const slot = msg.id ? cdp.pending.get(msg.id) : undefined
       if (!slot) return
       cdp.pending.delete(msg.id)
@@ -136,9 +156,28 @@ class Cdp {
       timeoutMs,
     )
     if (!ok) {
-      const where = await this.eval(`location.href`).catch(() => '?')
-      const seen = await this.eval(`(document.body.innerText || '').slice(0, 300)`).catch(() => '')
-      throw new Error(`等待页面文本超时：${text}\n  当前 URL：${where}\n  页面文本：${seen.replace(/\n/g, ' ')}`)
+      const where = await this.eval(`location.href`).catch((e) => `?(读取失败：${e.message})`)
+      // 不要把读取失败吞成空串 —— 那会让「页面正在导航」看起来像「页面白屏」
+      let seen = ''
+      try {
+        seen = await this.eval(`(document.body.innerText || '').slice(0, 300)`)
+      } catch (e) {
+        seen = `(读取失败：${e.message} —— 通常意味着页面正在导航/重载)`
+      }
+      const lines = [
+        `等待页面文本超时：${text}`,
+        `  当前 URL：${where}`,
+        `  页面文本：${seen.replace(/\n/g, ' ')}`,
+      ]
+      if (this.navigations.length) {
+        lines.push(`  期间发生的整页导航（${this.navigations.length} 次）：`)
+        for (const n of this.navigations) lines.push(`    ${n}`)
+      }
+      if (this.errors.length) {
+        lines.push('  页面报错：')
+        for (const e of [...new Set(this.errors)]) lines.push(`    ${e}`)
+      }
+      throw new Error(lines.join('\n'))
     }
     return true
   }
@@ -242,7 +281,14 @@ async function main() {
     mobile: false,
   })
 
-  /* ---- 1. 登录态注入 ---- */
+  /* ---- 1. 真实表单登录（**不再注入 token**）
+   *
+   * ⚠️ 这段原先的做法是「接口登录 → 把 token 写进 localStorage → 整页 reload」，
+   *    它**绕过了登录表单**，于是「点登录按钮之后会不会跳转」这条路径从未被覆盖 ——
+   *    后来真的出现了「点了登录不跳转、刷新一下才进去」的缺陷
+   *    （`App` 守卫与 `Login` 表单各持一份 `useAuth` 状态，守卫看不到登录结果），
+   *    这套冒烟当时并没有报警。现在改为真实走表单，把入口链路纳入覆盖。
+   */
   const auth = await api('/auth/login', null, {
     method: 'POST',
     body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
@@ -250,16 +296,46 @@ async function main() {
   check('接口登录成功', Boolean(auth?.access_token), `${auth?.user?.email ?? ''} / ${auth?.user?.role ?? ''}`)
 
   await cdp.goto(`${BASE}/`, '赛道罗盘')
+  // 干净起点：清掉同一 profile 里可能残留的登录态
+  await cdp.eval(`(() => { localStorage.clear(); sessionStorage.clear(); return 'ok' })()`)
+  await cdp.send('Page.reload')
+  await cdp.waitFor(`document.readyState === 'complete'`, 20_000)
+  await cdp.waitFor(`!!document.querySelector('button[type=submit]')`, 20_000)
+
   await cdp.eval(`(() => {
-    localStorage.setItem('trackcompass_token', ${JSON.stringify(auth.access_token)})
-    localStorage.setItem('trackcompass_user', ${JSON.stringify(JSON.stringify(auth.user))})
-    return 'ok'
+    const set = (el, v) => {
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+      setter.call(el, v)
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    const email = document.querySelector('input#email')
+    const pwd = document.querySelector('input#password') || document.querySelector('input[type=password]')
+    if (!email || !pwd) return false
+    set(email, ${JSON.stringify(EMAIL)})
+    set(pwd, ${JSON.stringify(PASSWORD)})
+    return true
   })()`)
-  const stored = await cdp.eval(
-    `[localStorage.getItem('trackcompass_token') ? 'token' : 'no-token',
-      localStorage.getItem('trackcompass_user') ? 'user' : 'no-user'].join('+')`,
-  )
-  check('登录态已写入 localStorage', stored === 'token+user', stored)
+  await cdp.eval(`(() => {
+    const btn = document.querySelector('button[type=submit]')
+    if (!btn) return false
+    for (const t of ['mousedown', 'mouseup', 'click']) {
+      btn.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window }))
+    }
+    return true
+  })()`)
+
+  const jumped = await cdp.waitFor(`location.hash.includes('/dashboard')`, 25_000)
+  const afterLogin = await cdp.eval(`({
+    hash: location.hash,
+    token: localStorage.getItem('trackcompass_token') ? 'token' : 'no-token',
+    user: localStorage.getItem('trackcompass_user') ? 'user' : 'no-user',
+    onLoginPage: document.body.innerText.includes('演示账号已预填'),
+  })`)
+  check('★ 表单登录后跳转到工作台（不再「点了不跳转」）',
+    jumped && !afterLogin.onLoginPage, `hash=${afterLogin.hash}`)
+  check('登录态已写入 localStorage',
+    afterLogin.token === 'token' && afterLogin.user === 'user',
+    `${afterLogin.token}+${afterLogin.user}`)
 
   /* ---- 2. 只预置关键词 ----
    * 数据源**故意不预置** —— 要验证的正是「① 默认值由页面自己补全为库内已有类型」。 */
@@ -274,9 +350,10 @@ async function main() {
   })()`)
 
   /* ---- 3. 进入需求探针 ----
-   * 顺序有讲究：先整页 reload 让 App 带着 localStorage 里的登录态重启，
-   * 再改 hash 跳页。只改 hash 的话 App 的 `isAuthenticated`
-   * 不会重新求值（它是在首屏渲染时读的 localStorage），会停在登录页。 */
+   * 这里保留一次整页 reload，用途已变为**验证「刷新后仍是已登录」**
+   * （证明登录态确实落在 localStorage，而不是只活在前端内存里）。
+   * 随后的 hash 跳页即可 —— 登录状态已改为全站共享的单例（`api/authStore.ts`），
+   * 不再依赖「首屏渲染时读一次 localStorage」。 */
   await cdp.send('Page.reload')
   await cdp.waitFor(`document.readyState === 'complete'`, 20_000)
   await sleep(1000)

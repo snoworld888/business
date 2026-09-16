@@ -38,6 +38,32 @@ const DEMAND_SIDE = new Set(SOURCES.map((s) => s.value))
 
 const INDUSTRIES = ['AI+制造', 'AI+医疗', '新能源科技', '具身智能']
 
+/**
+ * 「建议验证实验 / 样本」元素 → 可读文本。
+ *
+ * 后端已把 `suggested_experiments` 归一成字符串
+ * （`agents/base.py::normalize_experiments`），但**前端仍必须兜底**：
+ * ① 历史缓存里可能还是旧结构；② 模型输出不可信。
+ * 一个 dict 被直接当 React child 渲染，React 会抛
+ * `Objects are not valid as a React child` 并**卸载整棵树（整页白屏）** ——
+ * 实测就是这样：点「开始分析」后页面全空，只留下 `body.innerText === ''`。
+ */
+function experimentLabel(e: unknown): string {
+  if (typeof e === 'string') return e
+  if (e && typeof e === 'object') {
+    const o = e as Record<string, unknown>
+    for (const k of ['hypothesis', 'title', 'name', 'text', 'label', 'description', 'method']) {
+      const v = o[k]
+      if (typeof v === 'string' && v.trim()) return v.trim()
+    }
+    const parts = Object.values(o).filter(
+      (v): v is string => typeof v === 'string' && v.trim().length > 0,
+    )
+    if (parts.length) return parts.join('；')
+  }
+  return e == null ? '' : String(e)
+}
+
 /** 上一次探针的检索条件快照 —— 结果会跨路由保留，必须能说清「它是按什么条件跑出来的」 */
 interface DemandRun {
   at: string
@@ -394,16 +420,23 @@ export default function Demand() {
                         </Typography.Text>
                         {(p.samples ?? []).map((s, i) => (
                           <div key={i} className="tc-muted" style={{ fontSize: 12, paddingLeft: 8 }}>
-                            • {s}
+                            • {experimentLabel(s)}
                           </div>
                         ))}
                       </div>
                       <Space size={8} wrap style={{ marginTop: 10 }}>
-                        {(p.experiments ?? []).map((m) => (
-                          <a key={m} onClick={() => createExperiment(m)} style={{ fontSize: 12 }}>
-                            创建「{m}」
-                          </a>
-                        ))}
+                        {(p.experiments ?? []).map((m, i) => {
+                          const label = experimentLabel(m)
+                          return (
+                            <a
+                              key={`${i}-${label}`}
+                              onClick={() => createExperiment(label)}
+                              style={{ fontSize: 12 }}
+                            >
+                              创建「{label}」
+                            </a>
+                          )
+                        })}
                       </Space>
                     </Card>
                   ))}
@@ -448,11 +481,14 @@ export default function Demand() {
 
             <Card title="建议验证实验" size="small">
               <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                {result.suggested_experiments.map((e) => (
-                  <Button key={e} block onClick={() => createExperiment(e)}>
-                    {e}
-                  </Button>
-                ))}
+                {result.suggested_experiments.map((e, i) => {
+                  const label = experimentLabel(e)
+                  return (
+                    <Button key={`${i}-${label}`} block onClick={() => createExperiment(label)}>
+                      {label}
+                    </Button>
+                  )
+                })}
               </Space>
               <Alert
                 type="info"

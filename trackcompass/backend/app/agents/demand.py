@@ -33,6 +33,7 @@ from app.agents.base import (
     as_list,
     hit_any,
     negative_ratio,
+    normalize_experiments,
     urgency_ratio,
     willingness_ratio,
 )
@@ -223,4 +224,19 @@ class DemandDiscoveryAgent(BaseAgent):
             # 推荐算法与规则路径保持一致：按痛点名查表，查不到给默认两项。
             p["experiments"] = as_list(p.get("experiments")) or \
                 EXPERIMENT_RECOMMEND.get(str(p.get("name") or ""), ["客户访谈", "问卷调研"])
+
+        # ⚠️ 顶层 `suggested_experiments` 同样必须归一为字符串列表：
+        # 模型几乎总是返回结构化对象（hypothesis / target_pain_point / metric），
+        # 前端直接 `{e}` 渲染会让 React 抛
+        # `Objects are not valid as a React child` 并卸载整棵树 ⇒ **整页白屏**
+        # （实测：需求探针点「开始分析」后页面全空）。规则路径本来就是字符串列表，
+        # 这里做的是「两条路径输出一致」。
+        suggested = normalize_experiments(output.get("suggested_experiments"))
+        if not suggested:
+            # 与规则路径一致：先从痛点各自的 experiments 汇总，再兜底默认三项
+            for p in pts:
+                for e in as_list(p.get("experiments")):
+                    if isinstance(e, str) and e not in suggested:
+                        suggested.append(e)
+        output["suggested_experiments"] = suggested[:5] or ["落地页测试", "客户访谈", "问卷调研"]
         return output

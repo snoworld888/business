@@ -389,6 +389,30 @@
     同端口"一个路径 000、另一个 200"时优先怀疑是否首次访问，复测一次即可区分
     （别急着归因到 `allowedHosts` / host 白名单）。
 
+49. 🌟 **跨组件共享的状态必须用模块级单例，不能各持 `useState`**（2026-09-16 登录不跳转）。
+    `App`（路由守卫）与 `Login`（登录表单）都要 `useAuth()`，各持一份 state ⇒ 登录只更新表单那份，
+    守卫看不到 ⇒ `navigate('/dashboard')` 被 `<Navigate to="/login">` 弹回；**刷新一下才进去**。
+    实现：`api/authStore.ts`（模块级快照 + `useSyncExternalStore`，与 `taskStore.ts` 同构）。
+    **快速快照必须引用稳定**，否则无限重渲染。登出/401 清 storage 时**必须同步重置快照**，
+    否则「一边跳登录页、一边被守卫判为已登录」。
+    ⚠️ 排查口径：**先问「这个状态谁在消费」**，别只看「谁在写」。
+50. 🌟🌟 **LLM 输出的结构必须两端防御**（2026-09-16 需求探针整页白屏）。
+    模型对「建议验证实验」返回的是**结构化对象** `{hypothesis,target_pain_point,metric}`，
+    前端 `{e}` 直接当 React child 渲染 ⇒ React 抛 `Objects are not valid as a React child`
+    并**卸载整棵树 ⇒ 整页白屏**（不是局部报错）。
+    **后端**：`agents/base.py::normalize_experiments()` 归一为字符串列表（`postprocess` 里调用）；
+    **前端**：`experimentLabel(e: unknown)` 兜底，渲染与 `key` 都用它。
+    两端都要：后端管新数据，前端防历史缓存/未来漂移。
+    ⚠️ **同类事故已第二次**（前一次是 `p.experiments` 缺失导致 `undefined.map()` 白屏）——
+    规则路径（pytest 用 `LLM_PROVIDER=rule`）输出本来就是字符串，**形态差异只在真实推理出现**。
+51. **冒烟不能绕过真实入口**（同上）。`ui_smoke_persist.mjs` 原先「接口登录 → 注入 token → reload」，
+    绕过了登录表单 ⇒ 「点登录会不会跳转」从未被覆盖；且那次 reload 恰好掩盖了缺陷。
+    现改为**真实表单登录**。注入状态跑得快，但会系统性地掩盖入口链路缺陷。
+52. **断言失败信息不能吞异常**：`waitForText` 原用 `.catch(() => '')` 吞掉 `Runtime.evaluate` 的错，
+    把「页面正在导航」伪装成「页面白屏」，害我往「接口挂了」方向查了一轮。
+    现已改为**不吞错 + 附整页导航历史 + 附控制台报错**。
+    通用手法：**诊断脚本要把 console 报错与 `Page.frameNavigated` 一并抓出来**，
+    否则「空页面」这类症状无法定性（工具：`scripts/diag_page.mjs`）。
 ---
 
 ## 参考文档（工作区根目录，未纳入版本管理）
@@ -406,6 +430,7 @@ RAGFlow接入评估 · RAG关键词抽取开关评估 · 趋势雷达·能力画
 前端列表key冲突修复报告 · 趋势雷达Bug复查报告 · 趋势标签化重构报告 · 信号采集器实现说明 ·
 公共数据层与E2E租户隔离 · E2E写入数据清单 · 趋势能力画像链路修复报告 ·
 **前端会话态保持修复报告** · **跨页并行与后台任务报告** · **决策报告在线查看修复** ·
+**登录跳转与白屏修复报告** ·
 **遗留项台账（唯一出处）**
 
 可复用脚本（`trackcompass/scripts/`）：`check_api_contract.py` · `e2e_smoke.py` ·

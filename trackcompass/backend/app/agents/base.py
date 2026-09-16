@@ -50,6 +50,48 @@ def dicts_only(items: Any) -> list[dict[str, Any]]:
     return [x for x in as_list(items) if isinstance(x, dict)]
 
 
+# 「建议实验」里可能的文本字段，按优先级排列。
+# 模型常返回结构化对象，如
+# `{"hypothesis": ..., "target_pain_point": ..., "metric": ...}`。
+_EXPERIMENT_TEXT_KEYS = (
+    "hypothesis", "title", "name", "text", "label", "description", "method", "action",
+)
+
+
+def normalize_experiments(items: Any) -> list[str]:
+    """把「建议验证实验」归一为**字符串列表**。
+
+    为什么必须归一：模型经常返回结构化对象（`hypothesis` / `target_pain_point` / `metric`），
+    而前端把它当文本渲染 —— React 会抛 `Objects are not valid as a React child`
+    并**卸载整棵树**，表现为**整页白屏**（实测：需求探针点「开始分析」后页面全空，
+    且现场只留下 `document.body.innerText === ''`，极易被误判成「接口没返回」）。
+
+    归一后仍保留最关键的 `hypothesis`（前端点击建议实验时会拿它预填假设）。
+    """
+    out: list[str] = []
+    for item in as_list(items):
+        if isinstance(item, str):
+            text = item.strip()
+        elif isinstance(item, dict):
+            text = ""
+            for key in _EXPERIMENT_TEXT_KEYS:
+                value = item.get(key)
+                if isinstance(value, str) and value.strip():
+                    text = value.strip()
+                    break
+            if not text:
+                # 未知结构：把所有字符串值拼起来 —— 至少不丢信息、不崩
+                parts = [v.strip() for v in item.values() if isinstance(v, str) and v.strip()]
+                text = "；".join(parts)
+        elif item is None:
+            text = ""
+        else:
+            text = str(item).strip()
+        if text and text not in out:
+            out.append(text)
+    return out
+
+
 def signal_weight(sig: SignalView) -> float:
     """信号权重：类型基础分 + 融资额量级加成。"""
     base = _SIGNAL_TYPE_WEIGHT.get(sig.signal_type, 0.4)

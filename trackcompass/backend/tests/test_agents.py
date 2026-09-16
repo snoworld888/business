@@ -1147,3 +1147,59 @@ class TestTechKeywordExtraction:
         assert "GS-MGF-LPLs" in kws      # 含数字的型号
         assert "GPU" in kws              # 全大写缩写
         assert "6G" in kws
+
+
+class TestSuggestedExperimentContract:
+    """`suggested_experiments` 必须始终是**字符串列表**。
+
+    模型经常返回结构化对象（`hypothesis` / `target_pain_point` / `metric`），
+    而前端把它当 React child 渲染 —— React 会抛
+    `Objects are not valid as a React child` 并**卸载整棵树**，
+    表现为**整页白屏**（实测：需求探针点「开始分析」后页面全空，
+    且只留下 `document.body.innerText === ''`，极易被误判成「接口没返回」）。
+    """
+
+    def _state(self):
+        return AgentState(query="质检", signals=[])
+
+    def test_structured_items_normalized_to_text(self):
+        out = DemandDiscoveryAgent().postprocess(
+            {
+                "pain_points": [{"name": "整体体验不足"}],
+                "suggested_experiments": [
+                    {"hypothesis": "假设A", "target_pain_point": "P", "metric": "M"},
+                    "字符串项",
+                ],
+            },
+            self._state(),
+        )
+        se = out["suggested_experiments"]
+        assert all(isinstance(x, str) for x in se)
+        assert se[0] == "假设A"          # 优先取 hypothesis（前端要拿它预填实验假设）
+        assert "字符串项" in se
+
+    def test_unknown_dict_falls_back_to_joined_values(self):
+        out = DemandDiscoveryAgent().postprocess(
+            {"pain_points": [], "suggested_experiments": [{"a": "甲", "b": "乙"}]},
+            self._state(),
+        )
+        assert out["suggested_experiments"] == ["甲；乙"]
+
+    def test_missing_field_falls_back_like_rule_path(self):
+        out = DemandDiscoveryAgent().postprocess(
+            {"pain_points": [{"name": "整体体验不足", "experiments": ["客户访谈"]}]},
+            self._state(),
+        )
+        assert out["suggested_experiments"] == ["客户访谈"]
+
+    def test_empty_everything_gives_defaults(self):
+        out = DemandDiscoveryAgent().postprocess({"pain_points": []}, self._state())
+        se = out["suggested_experiments"]
+        assert se and all(isinstance(x, str) for x in se)
+
+    def test_dedup_and_cap(self):
+        out = DemandDiscoveryAgent().postprocess(
+            {"pain_points": [], "suggested_experiments": ["A", "A", "B", "C", "D", "E", "F"]},
+            self._state(),
+        )
+        assert out["suggested_experiments"] == ["A", "B", "C", "D", "E"]
