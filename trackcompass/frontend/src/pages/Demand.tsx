@@ -153,6 +153,10 @@ export default function Demand() {
    * 用户随时可以切走，跑完会弹全局通知，回到本页自动认领结果。
    */
   const run = async () => {
+    // 一旦开始跑，就当成「用户已确定数据源」：
+    // 否则「首屏自动补全默认数据源」可能在请求返回后**把条件改掉**，
+    // 让刚出的结果立刻变成「条件已改动」的过期结果。
+    sourcesTouched.current = true
     setProgress(10)
     await runTask<DemandProbe>(
       'demand:probe',

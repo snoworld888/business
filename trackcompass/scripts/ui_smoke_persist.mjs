@@ -293,9 +293,12 @@ async function main() {
   await cdp.waitForText('开始分析', 30_000)
   const onDemand = await cdp.eval(`document.body.innerText.includes('需求探针')`)
   check('已进入需求探针页（登录态生效）', onDemand, diag)
-  // 数据源默认值要等 /signals 返回后才补齐，先等选中项数量到位（含 1 个关键词标签）
+  // 数据源默认值要等 /signals 返回后才补齐。
+  // ⚠️ 不能只等「选中项数量」—— 5 个需求侧默认标签就能满足，会在响应回来前就断言（曾偶发假失败）。
+  //    判据要直接盯「存量计数」出现。
   await cdp.waitFor(
-    `document.querySelectorAll('.ant-select-selection-item').length >= ${types.length + 1}`,
+    `/（\\d+）/.test([...document.querySelectorAll('.ant-select-selection-item')]
+       .map(e => e.innerText).join(' '))`,
     15_000,
   )
   const sourceTags = await cdp.eval(
@@ -627,6 +630,57 @@ async function main() {
       return true
     })()`)
     await sleep(300)
+  }
+
+  /* ---- 11. 决策报告：历史报告要能在线看全文 ---- */
+  const reports = (await api('/reports', auth.access_token)).reports ?? []
+  console.log(`报告数：${reports.length}`)
+  if (!reports.length) {
+    console.log('  ⚠️ 没有已生成的报告，跳过决策报告场景')
+  } else {
+    await cdp.eval(`location.hash = '#/reports'`)
+    await cdp.waitForText('报告列表', 25_000)
+    // 等报告列表真正渲染出条目（`.ant-list-item` 也可能来自右侧「报告模板」列表）
+    const listUp = await cdp.waitFor(
+      `[...document.querySelectorAll('a')].some(e => e.innerText.includes('查看全文'))`,
+      15_000,
+    )
+    check('报告列表已渲染', listUp)
+
+    await cdp.clickByText('a', '查看全文')
+    const rendered = await cdp.waitFor(
+      `document.body.innerText.includes('执行摘要')`, 20_000,
+    )
+    const bodyText = await cdp.eval(`document.body.innerText`)
+    check('★ 点「查看全文」能在线看到报告正文（列表接口不带正文，需再拉详情）',
+      rendered && !bodyText.includes('该报告无正文内容'),
+      `正文含「执行摘要」=${rendered}`)
+    // 用**模板的固定章节名**判定正文渲染完整（`N. 标题` 的行首格式依赖 antd 内部分类名，不稳）
+    const SECTIONS = ['执行摘要', '赛道定义与市场空间', '需求验证', '技术评估', '竞争格局',
+      '商业模式', '风险与应对', '里程碑与资源需求', '证据链附录']
+    const found = SECTIONS.filter((t) => String(bodyText).includes(t))
+    check('报告按 9 段结构渲染', found.length >= 5,
+      `命中 ${found.length}/9：${found.slice(0, 3).join(' / ')}${found.length > 3 ? ' …' : ''}`)
+
+    const shot5 = join(ROOT, 'docs', '决策报告-在线查看-验证.png')
+    const cap5 = await cdp.send('Page.captureScreenshot', { format: 'png' })
+    writeFileSync(shot5, Buffer.from(cap5.data, 'base64'))
+    console.log(`截图：${shot5}`)
+
+    // 「在线打开」指向的静态地址必须真的可访问（导出接口返回的是 file:// URI）
+    const first = reports[0]
+    const base = String(first.download_url ?? '').split(/[\\/]/).pop()
+    const staticUrl = base ? `/static/reports/${encodeURIComponent(decodeURIComponent(base))}` : null
+    let status = 0
+    if (staticUrl) {
+      try {
+        status = (await fetch(`${BASE}${staticUrl}`)).status
+      } catch {
+        status = -1
+      }
+    }
+    check('★ 「在线打开」的静态地址可访问（200）', status === 200,
+      `${staticUrl ?? '无 download_url'} → HTTP ${status}`)
   }
 }
 

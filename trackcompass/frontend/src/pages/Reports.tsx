@@ -6,6 +6,7 @@ import {
   Col,
   Descriptions,
   Divider,
+  Dropdown,
   Empty,
   List,
   Row,
@@ -16,7 +17,13 @@ import {
   Typography,
   message,
 } from 'antd'
-import { DownloadOutlined, FileTextOutlined, PlusOutlined } from '@ant-design/icons'
+import {
+  DownloadOutlined,
+  DownOutlined,
+  FileTextOutlined,
+  LinkOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import ReactMarkdownLite from '../components/MarkdownLite'
 import PageHead from '../components/PageHead'
 import { EmptyState } from '../components/widgets'
@@ -24,6 +31,23 @@ import { opportunityApi, reportApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { runTask, useTask, useTaskVersion } from '../api/taskStore'
 import type { Report } from '../api/types'
+
+/**
+ * 把「导出产物」的路径/URI 换成**同端口可访问的静态地址**。
+ *
+ * 导出接口返回的 `url` 是服务端本地的 `file:///D:/...`（浏览器打不开），
+ * 真正的入口是后端挂载的 `/static/reports/<文件名>`（`main.py` 里 mount）。
+ */
+function staticUrlOf(fileUrlOrPath?: string | null): string | null {
+  if (!fileUrlOrPath) return null
+  const base = fileUrlOrPath.split(/[\\/]/).pop()
+  if (!base) return null
+  try {
+    return `/static/reports/${encodeURIComponent(decodeURIComponent(base))}`
+  } catch {
+    return `/static/reports/${encodeURIComponent(base)}`
+  }
+}
 
 /** P09 决策报告（《原型设计》§5.9） */
 /** 报告生成的响应类型 —— 从客户端推导，避免手写重复的下游契约 */
@@ -34,6 +58,8 @@ export default function Reports() {
   const [template, setTemplate] = useState('investment_memo')
   const [format, setFormat] = useState('markdown')
   const [preview, setPreview] = useState<Report | null>(null)
+  /** 取正文时的加载态（列表接口不带 content，点「查看」要再拉一次详情） */
+  const [opening, setOpening] = useState(false)
   /** 报告生成跑在应用级任务注册表里：文档生成要几秒，用户不必钉在页面上等 */
   const generateTask = useTask<GeneratedReport>('reports:generate')
   const generating = generateTask?.status === 'running'
@@ -80,6 +106,47 @@ export default function Reports() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generateTask?.finishedAt, generateTask?.status])
 
+  /**
+   * 点「查看」看正文。
+   *
+   * ⚠️ 列表接口**不返回 `content`**（只有元信息），因此不能直接把列表项塞进预览区 ——
+   * 之前就是这么写的，结果每份历史报告都显示「该报告无正文内容」，
+   * 看起来像「不能在线看」。正文要靠详情接口 `GET /reports/{id}` 单独取。
+   * 刚生成的那份已经带正文（POST 响应里有 `sections_detail`），直接用，省一次请求。
+   */
+  const openReport = async (r: Report) => {
+    if (r.content?.sections?.length) {
+      setPreview(r)
+      return
+    }
+    setOpening(true)
+    try {
+      setPreview(await reportApi.detail(r.id))
+    } catch {
+      message.error('报告正文加载失败，请重试')
+    } finally {
+      setOpening(false)
+    }
+  }
+
+  /** 在线打开（浏览器新标签页看排版版）：有导出产物就直接开，没有就先导 HTML。 */
+  const openOnline = async (report: Report) => {
+    const existing = staticUrlOf(report.download_url)
+    if (existing) {
+      window.open(existing, '_blank')
+      return
+    }
+    const res = await reportApi.exportAs(report.id, 'html')
+    if (res.error) {
+      message.warning(res.error)
+      return
+    }
+    const url = staticUrlOf(res.path) ?? staticUrlOf(res.url)
+    if (url) window.open(url, '_blank')
+    else message.warning('导出成功，但未拿到可访问地址')
+    await refresh()
+  }
+
   const exportAs = async (report: Report, fmt: string) => {
     const res = await reportApi.exportAs(report.id, fmt)
     if (res.error) {
@@ -87,8 +154,12 @@ export default function Reports() {
       return
     }
     message.success(`已导出 ${res.format.toUpperCase()}`)
-    if (res.path) {
-      window.open(`/static/reports/${res.path.split(/[\\/]/).pop()}`, '_blank')
+    // 网页类格式顺手打开；PPT / Word 属于「下载后编辑」，不弹窗口
+    if (fmt === 'html') {
+      const url = staticUrlOf(res.path) ?? staticUrlOf(res.url)
+      if (url) window.open(url, '_blank')
+    } else if (res.path) {
+      message.info(`文件已生成：${res.path.split(/[\\/]/).pop()}`)
     }
     await refresh()
   }
@@ -154,15 +225,29 @@ export default function Reports() {
                 renderItem={(r) => (
                   <List.Item
                     actions={[
-                      <a key="v" onClick={() => setPreview(r)}>
-                        查看
+                      <a key="v" onClick={() => openReport(r)}>
+                        查看全文
                       </a>,
-                      <a key="p" onClick={() => exportAs(r, 'pptx')}>
-                        导出 PPT
+                      <a key="o" onClick={() => openOnline(r)}>
+                        在线打开
                       </a>,
-                      <a key="w" onClick={() => exportAs(r, 'docx')}>
-                        导出 Word
-                      </a>,
+                      <Dropdown
+                        key="e"
+                        menu={{
+                          items: [
+                            { key: 'html', label: '导出 HTML（可在线打开）' },
+                            { key: 'markdown', label: '导出 Markdown' },
+                            { key: 'pptx', label: '导出 PPT' },
+                            { key: 'docx', label: '导出 Word' },
+                            { key: 'json', label: '导出 JSON' },
+                          ],
+                          onClick: ({ key }) => exportAs(r, key),
+                        }}
+                      >
+                        <a>
+                          导出 <DownOutlined style={{ fontSize: 10 }} />
+                        </a>
+                      </Dropdown>,
                     ]}
                   >
                     <List.Item.Meta
@@ -209,7 +294,7 @@ export default function Reports() {
         </Col>
 
         <Col xs={24} lg={14}>
-          <Spin spinning={generating}>
+          <Spin spinning={generating || opening}>
             {preview ? (
               <Card
                 title={preview.title}
@@ -220,6 +305,15 @@ export default function Reports() {
                       {preview.version}
                     </Tag>
                     <Tag className="tc-tag-soft">{preview.evidence_count} 条证据</Tag>
+                    <Button
+                      size="small"
+                      type="primary"
+                      ghost
+                      icon={<LinkOutlined />}
+                      onClick={() => openOnline(preview)}
+                    >
+                      在线打开
+                    </Button>
                     <Button
                       size="small"
                       icon={<DownloadOutlined />}
