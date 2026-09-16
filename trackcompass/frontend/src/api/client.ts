@@ -87,7 +87,7 @@ http.interceptors.response.use(
     } else if (status && status >= 500) {
       message.error(detail || '服务器错误')
     } else if (!status) {
-      message.error('无法连接后端服务，请确认已启动 http://127.0.0.1:8010')
+      message.error('无法连接后端服务，请确认后端已启动（默认 8020 端口）')
     }
     return Promise.reject(error)
   },

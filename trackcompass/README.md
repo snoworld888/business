@@ -27,16 +27,17 @@ cd D:/01code/business/trackcompass/frontend
 npm install --registry=https://registry.npmmirror.com
 npm run build
 
-# ⑤ 启动服务（单端口同时提供 UI 与 API）
+# ⑤ 启动服务（单端口同时提供 UI 与 API；0.0.0.0 = 局域网可访问）
 cd D:/01code/business/trackcompass/backend
-"C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe" -m uvicorn app.main:app --host 127.0.0.1 --port 8020
+"C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe" -m uvicorn app.main:app --host 0.0.0.0 --port 8020
 ```
 
-启动后**同一个端口**即可访问全部内容：
+启动后**同一个端口**即可访问全部内容（`<本机IP>` 见 `python scripts/lan_ip.py`）：
 
 | 地址 | 说明 |
 | --- | --- |
-| <http://127.0.0.1:8020/> | 前端界面（登录 `admin@demo.com` / `TrackCompass@2026`） |
+| <http://127.0.0.1:8020/> | 前端界面（本机；登录 `admin@demo.com` / `TrackCompass@2026`） |
+| <http://本机IP:8020/> | 前端界面（局域网，同网段同事直接打开） |
 | <http://127.0.0.1:8020/docs> | Swagger UI（OpenAPI 契约） |
 | <http://127.0.0.1:8020/redoc> | ReDoc |
 | <http://127.0.0.1:8020/api/v1/health> | 健康检查 |
@@ -44,6 +45,10 @@ cd D:/01code/business/trackcompass/backend
 | <http://127.0.0.1:8020/api/v1/workflow> | 编排图结构 |
 
 > 前端使用 HashRouter，因此静态托管无需服务端做 history fallback。
+>
+> **局域网访问**：默认监听 `0.0.0.0`，一键脚本会打印可用的局域网地址。
+> 仅本机使用请加 `HOST=127.0.0.1`（详见 `docs/局域网访问配置说明.md`）。
+> ⚠️ 开放局域网后同网段任何人都能登录，演示账号是公开的 —— 仅限受信任内网使用。
 
 ### 1.2 前端开发模式（可选）
 
@@ -51,12 +56,13 @@ cd D:/01code/business/trackcompass/backend
 
 ```bash
 cd D:/01code/business/trackcompass/frontend
-npm run dev          # http://127.0.0.1:5180，已代理 /api → 8020
+npm run dev          # http://127.0.0.1:5180（局域网亦可），已代理 /api → 8020
 ```
 
 > 端口说明：本机 8010 已被其他服务占用，因此统一使用 **8020**。
 > 如需变更，同时修改 `frontend/vite.config.ts` 的 proxy target 与启动命令。
 > 若要让后端不再托管前端，设置 `SERVE_FRONTEND=false`。
+> ⚠️ Vite dev server **首次**访问会触发依赖预构建，可能耗时数秒（局域网首次打开尤其明显），之后就恢复正常。
 
 ### 1.3 演示账号
 
@@ -68,19 +74,27 @@ npm run dev          # http://127.0.0.1:5180，已代理 /api → 8020
 | invest@demo.com | 投资部 | TrackCompass@2026 |
 | expert@demo.com | 领域专家 | TrackCompass@2026 |
 
-### 1.4 三个验证脚本
+### 1.4 验证脚本
 
 ```bash
 cd D:/01code/business/trackcompass
+PY="C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe"
 
-# 单元 / 集成测试（246 个用例）
-cd backend && "C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe" -m pytest && cd ..
+# 单元 / 集成测试
+cd backend && "$PY" -m pytest && cd ..
 
-# 端到端 HTTP 冒烟（30 项，需服务已启动）
-"C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe" scripts/e2e_smoke.py
+# 端到端 HTTP 冒烟（需服务已启动）
+"$PY" scripts/e2e_smoke.py
 
 # 前后端契约一致性（防 404）
-"C:/Users/PC/.workbuddy/binaries/python/envs/trackcompass/Scripts/python.exe" scripts/check_api_contract.py
+"$PY" scripts/check_api_contract.py
+
+# 局域网可访问性自检（本机 + 局域网 IP 两个来源各跑一遍）
+"$PY" scripts/check_lan_access.py
+
+# UI 冒烟（真实 Chromium，零依赖；可指定任意来源，含局域网地址）
+node scripts/ui_smoke_persist.mjs
+TC_BASE=http://192.168.2.192:8020 node scripts/ui_smoke_persist.mjs
 ```
 
 ---
@@ -197,6 +211,7 @@ API 层完整覆盖技术文档 §6.2 的 8 个核心接口，并扩展了信号
 | `docs/RAGFlow接入评估.md` | **RAGFlow 全量替换的实测证据、激活结果与踩坑记录（`keyword` 参数导致检索失败的根因）** |
 | `docs/测试报告.md` | 测试用例清单与实测结果 |
 | `docs/产品使用手册.md` | 面向最终用户的操作说明 |
+| `docs/局域网访问配置说明.md` | **绑定地址改造、开关方式、防火墙放行、安全提示与实测证据** |
 | `docs/验收标准.md` | 逐条对照四份文档的验收矩阵 |
 
 ---
