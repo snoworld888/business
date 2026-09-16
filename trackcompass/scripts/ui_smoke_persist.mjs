@@ -356,6 +356,125 @@ async function main() {
   await sleep(600)
   const afterClear = await cdp.eval(`document.body.innerText.includes('尚未执行分析')`)
   check('「清除结果」可回到空态', cleared === 'clicked' && afterClear, cleared)
+
+  /* ---- 8. 能力画像：选好的公司 / 未保存内容 / 当前 Step 都要跨页保留 ---- */
+  const profiles = (await api('/company/profiles', auth.access_token)).profiles ?? []
+  // 关掉「最近保存」那家才验证得出「选择是否被保留」
+  const targetProfile = profiles[profiles.length - 1]
+  const canSwitch = profiles.length >= 2
+  const expectedName = (canSwitch ? targetProfile?.name : profiles[0]?.name) ?? ''
+  console.log(`公司画像：${profiles.map((p) => p.name).join(' / ') || '无'}`)
+
+  // ⚠️ antd 的 Select / Steps 靠 **mousedown** 触发，纯 `click()` 打不开 ——
+  //    必须把 pointerdown/mousedown/mouseup/click 都派发一遍（实测踩坑）
+  const fire = (selExpr) => cdp.eval(`(() => {
+    const el = ${selExpr}
+    if (!el) return false
+    for (const t of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+      el.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window }))
+    }
+    return true
+  })()`)
+
+  await cdp.eval(`location.hash = '#/profile'`)
+  await cdp.waitForText('当前公司', 25_000)
+  check('已进入能力画像页', await cdp.eval(`document.body.innerText.includes('公司能力画像')`))
+
+  if (canSwitch) {
+    // 8.1 切到「非最近保存」的那家公司
+    await fire(`document.querySelectorAll('.ant-select-selector')[0]`)
+    const opened = await cdp.waitFor(
+      `document.querySelectorAll('.ant-select-item-option').length > 0`,
+      6000,
+    )
+    const optTexts = await cdp.eval(
+      `[...document.querySelectorAll('.ant-select-item-option')].map(o => o.innerText).join(' | ')`,
+    )
+    check('公司下拉可打开', opened, optTexts.slice(0, 120))
+
+    const picked = await cdp.eval(`(() => {
+      const opts = [...document.querySelectorAll('.ant-select-item-option')]
+      const hit = opts.find(o => o.innerText.includes(${JSON.stringify(targetProfile.name)}))
+      if (!hit) return false
+      for (const t of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+        hit.dispatchEvent(new MouseEvent(t, { bubbles: true, cancelable: true, view: window }))
+      }
+      return true
+    })()`)
+    check('已切换到目标公司', picked, targetProfile.name)
+    const switched = await cdp.waitFor(
+      `(document.querySelector('input#name') || {}).value === ${JSON.stringify(targetProfile.name)}`,
+      15_000,
+    )
+    check('目标公司画像已载入表单', switched,
+      `name = ${await cdp.eval(`(document.querySelector('input#name') || {}).value`)}`)
+    const editingState = await cdp.eval(`sessionStorage.getItem('tc:ui:profile:editing')`)
+    check('切换公司已写入会话态', String(editingState).includes(targetProfile.id.slice(0, 8)),
+      String(editingState).slice(0, 80))
+  } else {
+    console.log(`  ⚠️ 只有 ${profiles.length} 家公司，跳过「切换选择是否被保留」这一段`)
+  }
+
+  // 8.2 填一个未保存的字段 + 切到第 2 步
+  const MARK = '2031-07'
+  await cdp.eval(`(() => {
+    const el = document.querySelector('input#founded_at')
+    if (!el) return false
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+    setter.call(el, ${JSON.stringify(MARK)})
+    el.dispatchEvent(new Event('input', { bubbles: true }))
+    return true
+  })()`)
+  await sleep(400)
+  const draftWritten = await cdp.eval(
+    `Object.keys(JSON.parse(sessionStorage.getItem('tc:ui:profile:drafts') || '{}')).join(',')`,
+  )
+  check('改动已记为未保存草稿', draftWritten.length > 0, `草稿键：${draftWritten}`)
+
+  // ⚠️ antd Steps 的点击处理挂在**内层 `.ant-steps-item-container`** 上，
+  //    派发到外层 `.ant-steps-item` 不会冒泡「向下」传到 handler（实测踩坑）
+  await fire(
+    `(document.querySelectorAll('.ant-steps-item')[1] || {}).querySelector?.('.ant-steps-item-container')`,
+  )
+  await sleep(300)
+  const stepAfterClick = await cdp.eval(`sessionStorage.getItem('tc:ui:profile:step')`)
+  check('点 Step 已写入会话态', String(stepAfterClick) === '1', `profile:step = ${stepAfterClick}`)
+
+  // 8.3 切走再回来
+  await cdp.clickByText('.ant-menu-item', '趋势雷达')
+  await cdp.waitForText('重新扫描', 25_000)
+  await cdp.clickByText('.ant-menu-item', '能力画像')
+  await cdp.waitForText('当前公司', 25_000)
+  await sleep(1200) // 等画像拉取 + 草稿回填
+
+  const backProfile = await cdp.eval(`(() => ({
+    name: (document.querySelector('input#name') || {}).value,
+    founded: (document.querySelector('input#founded_at') || {}).value,
+    alert: document.body.innerText.includes('已恢复未保存的草稿'),
+    step: [...document.querySelectorAll('.ant-steps-item')]
+      .findIndex(e => e.className.includes('ant-steps-item-active')),
+  }))()`)
+  check('★ 切回来仍是刚才选的那家公司', backProfile.name === expectedName,
+    `当前公司 = ${backProfile.name}（期望 ${expectedName}）`)
+  check('★ 未保存的字段值被恢复', backProfile.founded === MARK, `成立时间 = ${backProfile.founded}`)
+  check('★ 提示「已恢复未保存的草稿」', backProfile.alert)
+  check('★ 当前 Step 被保留', backProfile.step === 1, `active step = ${backProfile.step}`)
+
+  const shot2 = join(ROOT, 'docs', '能力画像-会话态保持-验证.png')
+  const cap2 = await cdp.send('Page.captureScreenshot', { format: 'png' })
+  writeFileSync(shot2, Buffer.from(cap2.data, 'base64'))
+  console.log(`截图：${shot2}`)
+
+  // 8.4 丢弃草稿 → 回到已保存的画像
+  await cdp.clickByText('button', '丢弃草稿')
+  await sleep(900)
+  const afterDiscard = await cdp.eval(`(() => ({
+    alert: document.body.innerText.includes('已恢复未保存的草稿'),
+    founded: (document.querySelector('input#founded_at') || {}).value,
+  }))()`)
+  check('「丢弃草稿」清提示并还原已保存值',
+    !afterDiscard.alert && afterDiscard.founded !== MARK,
+    `成立时间 = ${afterDiscard.founded}`)
 }
 
 async function cleanup() {

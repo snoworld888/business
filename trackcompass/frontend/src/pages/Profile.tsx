@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Alert,
   Button,
@@ -21,8 +21,10 @@ import { InboxOutlined, PlusOutlined, SaveOutlined, SyncOutlined } from '@ant-de
 import { useNavigate } from 'react-router-dom'
 import PageHead from '../components/PageHead'
 import Radar from '../components/Radar'
+import { formatClock } from '../components/widgets'
 import { profileApi, trendApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
+import { usePersistentState } from '../hooks/usePersistentState'
 import type { CompanyProfile, CompanyProfileSummary } from '../api/types'
 
 interface FormValues {
@@ -43,11 +45,37 @@ interface FormValues {
 const INDUSTRIES = ['AI+制造', 'AI+医疗', '新能源科技', '具身智能', 'AI+农业', 'AI+教育']
 const SCALES = ['1-50人', '50-200人', '200-500人', '500-2000人', '2000人以上']
 
-/** P03 公司能力画像（《原型设计》§5.3） */
+/** 草稿键：未选中任何公司时代表「正在新建」 */
+const NEW_KEY = '__new__'
+
+/**
+ * 未保存草稿：**按编辑对象分别存**。
+ *
+ * 为什么按对象分而不是只存一份：用户可能在 A 公司改了技术栈、又切到 B 公司填专利，
+ * 只存一份会互相覆盖。切回 A 时应该还能看到 A 那次的未保存修改。
+ */
+type DraftMap = Record<string, { at: string; values: Partial<FormValues> }>
+
+/**
+ * 上次离开本页时正在编辑谁 —— 决定重新进入时拉哪一份画像。
+ *
+ * 不记这个的话，回到页面永远拉「最近保存的那家公司」，
+ * 用户刚在右上角选好的公司会**跳回去**（这就是「选好了再回来又变默认值」的根因之一）。
+ */
+type Editing = { kind: 'current' } | { kind: 'company'; id: string } | { kind: 'new' }
+
+/** P03 公司能力画像（《原型设计》§5.3）
+ *
+ * 状态保持（2026-09-16）：用户报「公司/字段选好了，切别的页面再回来又变默认值」。
+ * 根因有两层，都已修：
+ *   ① 回到页面固定拉「最近保存的那家公司」⇒ 刚选好的公司会跳回去 → 记 `editing`
+ *   ② 填了但没保存的内容只活在组件内存里，卸载即失 → 按公司存 `drafts`（未保存草稿）
+ * 另外 Step 当前步也保留，不再每次弹回第一步。
+ */
 export default function Profile() {
   const [form] = Form.useForm<FormValues>()
   const navigate = useNavigate()
-  const [step, setStep] = useState(0)
+  const [step, setStep] = usePersistentState<number>('profile:step', 0)
   const [saving, setSaving] = useState(false)
   const [switching, setSwitching] = useState(false)
   const [radar, setRadar] = useState<Record<string, number> | null>(null)
@@ -60,6 +88,13 @@ export default function Profile() {
   const [switchError, setSwitchError] = useState<string | null>(null)
   /** 供应链目前无表单字段，保存时需原样带回当前公司的值，避免被清空 */
   const [supplyChain, setSupplyChain] = useState<string[]>([])
+  /** 上次离开时在编辑谁；未保存草稿；本次进入时**恢复出来的**草稿时间 */
+  const [editing, setEditing] = usePersistentState<Editing>('profile:editing', { kind: 'current' })
+  const [drafts, setDrafts] = usePersistentState<DraftMap>('profile:drafts', {})
+  const [restoredAt, setRestoredAt] = useState<string | null>(null)
+  const draftKey = currentId ?? NEW_KEY
+  /** 正在切换中的公司 id —— 防止同一次切换被并发触发两次 */
+  const switchingTo = useRef<string | null>(null)
 
   const { data: profile, loading, error: loadError, refresh: reloadProfile } =
     useAsync(() => profileApi.get(), [])
@@ -99,29 +134,84 @@ export default function Profile() {
     if (profile) applyProfile(profile)
   }, [profile, applyProfile])
 
-  /** 切换公司：按 id 拉取完整画像后回填 */
-  const switchCompany = async (id: string) => {
-    if (id === currentId) return
-    setSwitching(true)
-    setSwitchError(null)
-    try {
-      const p = await profileApi.get(id)
-      if (!p) {
-        setSwitchError('该公司画像已不存在，请点右侧刷新重试')
-        refreshList()
-        return
-      }
-      applyProfile(p)
-      message.success(`已载入「${p.name}」的能力画像`)
-    } catch (e) {
-      setSwitchError(e instanceof Error ? e.message : String(e))
-    } finally {
-      setSwitching(false)
-    }
+  /* ------------------------------------------------ 未保存草稿 */
+  /** 把当前表单值记为**当前编辑对象**的未保存草稿（表单任意改动 / 解析填入后调用） */
+  const saveDraft = () => {
+    setDrafts((prev) => ({
+      ...prev,
+      [draftKey]: { at: new Date().toISOString(), values: form.getFieldsValue() },
+    }))
   }
 
-  /** 新建公司：清空表单与面板；保存时不带 id ⇒ 后端新建一份画像 */
-  const createNew = () => {
+  const dropDraft = (key: string) => {
+    setDrafts((prev) => {
+      if (!(key in prev)) return prev
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+    setRestoredAt(null)
+  }
+
+  /** 丢弃草稿：删掉草稿并把表单恢复成「已保存的画像」（新建态则清空） */
+  const discardDraft = async () => {
+    const key = draftKey
+    dropDraft(key)
+    if (key === NEW_KEY) {
+      form.resetFields()
+      message.info('已丢弃草稿')
+      return
+    }
+    const p = await profileApi.get(key)
+    if (p) applyProfile(p)
+    message.info('已丢弃草稿，恢复为已保存的画像')
+  }
+
+  /**
+   * 恢复「上次离开时正在编辑的对象」。
+   *
+   * 只在首次加载跑一次：否则会与用户的主动切换互相打架。
+   * ⚠️ 必须等首屏画像拉取**落定**（`loading === false`）再判断：
+   * `currentId` 在拉取完成前是 null，若名单先回来就急着切换，
+   * 会在「后端给的当前公司恰好就是要恢复的那家」时**重复拉一次**（实测多出一条重复提示）。
+   */
+  const restoreDone = useRef(false)
+  useEffect(() => {
+    if (restoreDone.current || loading) return
+    if (editing.kind === 'new') {
+      restoreDone.current = true
+      resetToNew({ clearDraft: false })
+      return
+    }
+    if (editing.kind === 'company' && editing.id) {
+      if (!listData) return // 等公司列表就绪，避免加载已被删除的公司
+      restoreDone.current = true
+      // 与后端给的当前公司一致就无需再切；名单里已经没有（被别处删掉）也保持现状
+      if (editing.id !== currentId && companies.some((c) => c.id === editing.id)) {
+        void switchCompany(editing.id, { silent: true })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing, listData, companies, loading, currentId])
+
+  /**
+   * 载入某份画像后，用它的未保存草稿覆盖表单。
+   *
+   * 右侧面板（能力向量/推荐赛道/边界）**仍按已保存的画像**渲染 —— 草稿本来就还没落库，
+   * 拿它去显示「能力向量」等于展示不存在的结果。
+   */
+  const draftAppliedFor = useRef<string | null>(null)
+  useEffect(() => {
+    if (draftAppliedFor.current === draftKey) return
+    draftAppliedFor.current = draftKey
+    const d = drafts[draftKey]
+    if (!d) return
+    form.setFieldsValue(d.values)
+    setRestoredAt(d.at)
+  }, [draftKey, drafts, form])
+
+  /** 把表单与右侧面板切回「新建公司」的空态。`clearDraft=false` 用于首次恢复时保留草稿 */
+  const resetToNew = ({ clearDraft }: { clearDraft: boolean }) => {
     form.resetFields()
     setRadar(null)
     setTracks([])
@@ -131,12 +221,53 @@ export default function Profile() {
     setCurrentId(null)
     setSavedAt(null)
     setSwitchError(null)
+    setRestoredAt(null)
+    if (clearDraft) dropDraft(NEW_KEY)
+  }
+
+  /**
+   * 切换公司：按 id 拉取完整画像后回填。
+   *
+   * `silent` 用于「进入页面时恢复上次编辑对象」——那一步不需要弹提示，
+   * 否则每次进页面都弹一条「已载入 X」，与用户主动切换的反馈混在一起。
+   */
+  const switchCompany = async (id: string, opts: { silent?: boolean } = {}) => {
+    if (id === currentId || switchingTo.current === id) return
+    switchingTo.current = id
+    setSwitching(true)
+    setSwitchError(null)
+    setEditing({ kind: 'company', id })
+    try {
+      const p = await profileApi.get(id)
+      if (!p) {
+        setSwitchError('该公司画像已不存在，请点右侧刷新重试')
+        refreshList()
+        return
+      }
+      applyProfile(p)
+      if (!opts.silent) message.success(`已载入「${p.name}」的能力画像`)
+    } catch (e) {
+      setSwitchError(e instanceof Error ? e.message : String(e))
+    } finally {
+      switchingTo.current = null
+      setSwitching(false)
+    }
+  }
+
+  /** 新建公司：清空表单与面板；保存时不带 id ⇒ 后端新建一份画像 */
+  const createNew = () => {
     setStep(0)
+    // 用户主动点了「新建公司」= 要从空白开始，因此把可能存在的草稿一并清掉；
+    // 而「首次进入时恢复新建态」走 restore 分支，那条路径保留草稿。
+    resetToNew({ clearDraft: true })
+    setEditing({ kind: 'new' })
     message.info('已切换到「新建公司」，填写后保存即创建新档案')
   }
 
   const handleSave = async () => {
     const values = await form.validateFields()
+    /** 保存前的草稿键（新建态是 `__new__`，保存后会变成真实 id） */
+    const keyBefore = currentId ?? NEW_KEY
     setSaving(true)
     setSwitchError(null)
     try {
@@ -163,6 +294,10 @@ export default function Profile() {
       setVectorDim(res.vector_dim)
       setCurrentId(res.id)
       setSavedAt(res.updated_at ?? null)
+      // 已落库 ⇒ 草稿使命结束（留着会让下次进入「恢复」出一份与后端相同的假草稿）
+      dropDraft(keyBefore)
+      setEditing({ kind: 'company', id: res.id })
+      draftAppliedFor.current = res.id
       refreshList()
       message.success(
         `${res.created ? '已新建' : '已更新'}「${res.name}」的能力画像，能力向量 ${res.vector_dim} 维`,
@@ -236,6 +371,20 @@ export default function Profile() {
             共 {companies.length} 家公司；趋势分析 / 评分 / 报告均以「当前公司」为主体
           </span>
         </Space>
+        {restoredAt ? (
+          <Alert
+            type="warning"
+            showIcon
+            style={{ marginTop: 8 }}
+            message={`已恢复未保存的草稿（${formatClock(restoredAt)} 的修改）`}
+            description="下面表单里的内容是离开本页前填的、尚未保存的修改；右侧能力向量与推荐赛道仍按已保存的画像展示。"
+            action={
+              <Button size="small" onClick={discardDraft}>
+                丢弃草稿
+              </Button>
+            }
+          />
+        ) : null}
         {switchError || loadError ? (
           <Alert
             type="error"
@@ -274,7 +423,12 @@ export default function Profile() {
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={15}>
           <Card size="small" loading={loading}>
-            <Form form={form} layout="vertical" initialValues={{ talents: {}, tech_stack: [], patents: [] }}>
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{ talents: {}, tech_stack: [], patents: [] }}
+              onValuesChange={saveDraft}
+            >
               <div style={{ display: step === 0 ? 'block' : 'none' }}>
                 <Row gutter={16}>
                   <Col span={12}>
@@ -323,6 +477,9 @@ export default function Profile() {
                           patents: sug.patents ?? [],
                         })
                         message.success('已自动解析并填入，请人工确认')
+                        // 自动填入的也是「未保存修改」：不记草稿的话，
+                        // 用户传完文件切个页面回来就白填了
+                        saveDraft()
                       }
                     } catch {
                       message.error('解析失败')
