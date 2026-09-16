@@ -1,0 +1,123 @@
+
+客户端示例在本地：
+
+serve_client.py
+
+它封装了登录、申请 ticket、WebSocket 连接、创建会话、提交 prompt 和等待完成事件。它是参考客户端，不是 Hermes 服务本身，也没有完整实现并发、断线恢复和业务权限。
+
+11. Python 最小调用示例
+python
+import json
+import os
+from serve_client import HermesServeClient
+
+client = HermesServeClient(
+    "http://192.168.2.192:9219",
+    "backend",
+    os.environ["HERMES_SERVE_PASSWORD"],
+)
+try:
+    session = client.create_session(os.environ["HERMES_TASK_CWD"])
+    result = client.prompt(
+        session["session_id"],
+        "/schedule-extractor 今天八点开会，下午面试，还要见王经理。只输出最简JSON。",
+        timeout=300,
+    )
+    completion = result["completion"]
+    if completion.get("status") != "complete":
+        raise RuntimeError("Hermes任务未成功完成")
+    data = json.loads(completion["text"])
+    print(data)
+finally:
+    client.close()
+依赖 requests 和支持同步客户端的 websockets。正式系统还要补充业务鉴权、任务记录、并发控制、重连策略、输出文件校验和清理策略。
+
+12. 服务启动和整机重启恢复
+日常操作
+bash
+systemctl --user status hermes-native-serve.service --no-pager
+systemctl --user is-active hermes-native-serve.service
+systemctl --user is-enabled hermes-native-serve.service
+systemctl --user start hermes-native-serve.service
+systemctl --user restart hermes-native-serve.service
+journalctl --user -u hermes-native-serve.service -n 200 --no-pager
+ss -ltnp | grep 9219
+停止服务：
+
+bash
+systemctl --user stop hermes-native-serve.service
+重启会中断在途任务，应先暂停新请求。不要同时启动旧 hermes-api.service，不要使用宽泛进程匹配停止其他 Hermes 实例。
+
+整机重启后的恢复
+已确认 WSL 配置启用了 systemd，pc 用户为 Linger=yes，原生服务为 enabled。这样 WSL 启动后具备自动启动用户服务的条件。
+
+Windows 重启后是否自动启动该 WSL 发行版，以及 WSL 动态 IP 是否改变，本次没有做整机重启实测。若 9219 不通，从 Windows 主机本机执行：
+
+powershell
+wsl.exe --list --verbose
+wsl.exe -d <实际显示的发行版名称> -u pc
+进入 WSL 后：
+
+bash
+ps -p 1 -o comm=
+systemctl --user start hermes-native-serve.service
+systemctl --user status hermes-native-serve.service --no-pager
+ss -ltnp 'sport = :9219'
+ip -4 addr show eth0
+PID 1 应为 systemd，服务应为 active，9219 应监听。随后在 Windows 管理员 PowerShell 检查：
+
+powershell
+netsh interface portproxy show v4tov4
+Get-Service iphlpsvc
+Test-NetConnection 192.168.2.192 -Port 9219
+如果 9219 转发仍指向旧 WSL IP，先取得当前 eth0 地址，再只更新 9219 这一条规则：
+
+powershell
+netsh interface portproxy set v4tov4 listenaddress=0.0.0.0 listenport=9219 connectaddress=<当前WSL_IP> connectport=9219
+只有确认规则不存在时才使用 add。不要清空整张 portproxy 表。端口连通后还要重新登录、申请 ticket，并执行一次小样本任务。
+
+如果需要 Windows 无人值守整机自启，目前还需要单独配置并验证 Windows 计划任务，覆盖启动 WSL、检查服务、更新转发和测试 9219。
+
+13. 故障排查
+服务没有运行
+bash
+systemctl --user status hermes-native-serve.service --no-pager
+systemctl --user show hermes-native-serve.service -p ActiveState -p SubState -p MainPID -p NRestarts -p ExecMainStatus
+tail -n 200 /home/pc/hermes-native-serve/logs/service.err
+tail -n 200 /home/pc/hermes-native-serve/logs/service.log
+journalctl --user -u hermes-native-serve.service -n 200 --no-pager
+重点检查虚拟环境、D盘源码是否可见、serve.env 是否可读、9219 是否被占用。unit 的应用输出写入日志文件，journalctl 可能不包含全部模型错误。
+
+服务器本机可用，局域网不可用
+检查 WSL IP、Windows portproxy、IP Helper 服务和防火墙：
+
+powershell
+netsh interface portproxy show v4tov4
+Get-Service iphlpsvc
+Test-NetConnection 192.168.2.192 -Port 9219
+优先修正失效的 9219 转发，不要全局关闭防火墙，也不要修改其他项目端口。
+
+返回 401 或 WebSocket 拒绝
+确认后端保存了登录 Cookie；重新登录并申请新 ticket。不要复用已经使用或过期的 ticket，确认 WebSocket 使用 ws:// 和 /api/ws。
+
+404 或 405
+检查是否误调用旧自建服务的 /v1/tasks，或误把 gateway API Server 的路径用于当前 9219。检查 HTTP 方法，例如导出会话使用当前源码对应的方法。
+
+任务一直没有完成
+记录 session_id 和 RPC id，检查 WebSocket 事件、应用日志、模型网络、模型凭证和额度。客户端超时不等于服务端任务已经取消，不要自动无限重发相同 prompt。
+
+Skill 没触发或结果格式错误
+确认使用的是当前 HERMES_HOME、Skill 文件和正确的 prompt。对 payload.text 做 JSON 解析和字段校验；解析失败应标记为业务失败，不能伪造空结果。
+
+文件不存在或输出缺失
+检查后端和 Hermes 看到的路径是否一致、目录权限、输入是否已经写完、prompt 是否明确要求写入 outputs/。模型回复说已生成文件时，仍必须检查实际文件。
+
+用户看到其他用户会话
+这是当前架构的已知边界。原生服务共用 backend 账号，不提供本项目的业务用户隔离。检查后端是否在查询、提交、删除和下载前校验用户与会话、任务目录的对应关系。
+
+14. 联调验收顺序
+登录 → 申请 ticket → 建立 WebSocket → 创建会话并核对 cwd → 提交文字抽取 → 等待 message.complete → 解析和校验 JSON → 查询历史 → 修改标题 → 删除测试会话。
+
+文件任务另外验证：后端写入 inputs → Hermes 读取 → outputs 生成 → 后端检查并下载。当前已实际验证认证、WebSocket、会话创建、共享文件读写和 schedule Skill；并发、断线恢复、全格式 Office 文件和执行层多用户隔离尚未完成验收。
+
+病毒扫描不属于当前交付流程。

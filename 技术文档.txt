@@ -1,0 +1,742 @@
+技术文档
+赛道罗盘 TrackCompass 技术设计文档
+0. 文档信息
+项目	内容
+文档名称	赛道罗盘 TrackCompass 技术设计文档
+版本	V1.0
+日期	2026-09-14
+状态	初稿
+作者	技术架构组
+适用范围	后端、前端、AI、数据、运维工程师
+密级	内部
+关联文档	《赛道罗盘 TrackCompass 产品设计文档 V1.0》
+变更记录
+版本	日期	变更内容	作者
+V1.0	2026-09-14	基于产品设计文档编写技术方案	技术架构组
+
+1. 概述
+1.1 背景
+赛道罗盘是一个 AI 驱动的科技公司商机发现与赛道选择决策系统。产品设计文档已定义四层架构、七 Agent、八大功能模块。本文档在此基础上，给出可落地的技术架构、数据模型、接口规范、AI Agent 实现方案、部署运维方案。
+1.2 技术目标
+●支持多源异构数据采集与清洗，日处理千万级信号。
+●支持知识图谱、向量检索、RAG 增强生成。
+●支持七 Agent 并行分析与工作流编排。
+●支持赛道评分卡可配置、可解释、可追溯。
+●支持 SaaS 与私有化部署，满足数据合规。
+●系统可用性 99.9%，页面响应 ≤ 2s，报告生成 ≤ 5min。
+1.3 术语
+术语	定义
+Signal	原始信号数据，如政策、专利、融资、招聘、社媒
+Opportunity	机会卡片，由信号聚合分析形成
+Track	赛道，具备市场空间、竞争格局和技术门槛的行业方向
+Capability Profile	公司能力画像
+Scorecard	赛道评分卡
+Agent	具备特定分析能力的 AI 智能体
+RAG	检索增强生成
+TRL/CRL	技术就绪水平 / 客户就绪水平
+
+2. 总体架构
+2.1 分层架构
+
+┌─────────────────────────────────────────────────────────────┐
+│                        前端层 (Web)                          │
+│  React / Next.js + ECharts + Ant Design                     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                      API 网关 / BFF 层                       │
+│  NestJS / FastAPI Gateway + JWT + Rate Limit                │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                        决策层 (工作流)                        │
+│  能力画像 │ 机会图谱 │ 赛道评分 │ 验证实验 │ 报告生成 │ 监控  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                      认知层 (AI 分析)                        │
+│  Agent 编排 (LangGraph) │ 知识图谱 (Neo4j) │ 向量库 (Milvus) │
+│  LLM 服务 │ RAG 引擎 │ 评分模型 │ NLP 管道                   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                       信号层 (数据采集)                       │
+│  API 采集 │ 爬虫 │ 文件上传 │ 消息队列 (Kafka) │ 数据清洗     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+┌─────────────────────────────────────────────────────────────┐
+│                        数据存储层                             │
+│  PostgreSQL │ Neo4j │ Milvus │ Redis │ MinIO │ ClickHouse   │
+└─────────────────────────────────────────────────────────────┘
+
+2.2 技术选型
+层级	组件	选型	理由
+前端	框架	Next.js 14 + React 18	SSR/SSG，SEO 友好，生态成熟
+前端	UI	Ant Design 5 + TailwindCSS	企业级组件，快速开发
+前端	可视化	ECharts + D3.js + Cytoscape.js	图表、图谱、关系网络
+后端	API 框架	FastAPI (Python) + NestJS (Node)	AI 生态 Python，业务 API NestJS
+后端	任务队列	Celery + Redis / BullMQ	异步任务、定时任务
+后端	工作流	LangGraph / Temporal	Agent 编排、状态管理
+AI	LLM	GPT-4o / Claude 3.5 / Qwen2.5	多模型路由，支持私有化
+AI	RAG	LangChain + LlamaIndex	成熟生态，支持混合检索
+AI	Embedding	BGE-M3 / text-embedding-3-large	中英文混合，多语言
+AI	NLP	spaCy + HanLP + BERT	实体识别、情感分析、聚类
+数据	关系库	PostgreSQL 16	事务、JSONB、扩展性强
+数据	图库	Neo4j 5	知识图谱，Cypher 查询
+数据	向量库	Milvus 2.4	高性能向量检索，支持标量过滤
+数据	缓存	Redis 7	会话、缓存、分布式锁
+数据	对象存储	MinIO	私有化部署，S3 兼容
+数据	OLAP	ClickHouse	信号分析、报表聚合
+数据	消息队列	Kafka	高吞吐数据管道
+数据	数据管道	Airflow / Prefect	调度、依赖管理
+部署	容器	Docker + Kubernetes	弹性伸缩，私有化
+监控	可观测	Prometheus + Grafana + Loki + Jaeger	指标、日志、链路
+CI/CD	流水线	GitLab CI / GitHub Actions + ArgoCD	自动化部署
+2.3 部署架构
+●SaaS 模式：多租户，K8s 集群，按租户隔离数据。
+●私有化模式：单租户，Docker Compose / K8s，数据本地化。
+●混合模式：核心数据本地，AI 能力调用云端 API（可配置）。
+
+3. 数据架构
+3.1 数据源接入
+数据类型	来源	采集方式	频率
+政策	政府网站、产业政策	爬虫 + API	每日
+技术	论文、专利	API (Google Patents, arXiv)	每日
+资本	融资事件、财报	API (Crunchbase, 企查查)	每日
+人才	招聘 JD	爬虫	每日
+市场	招标、应用商店评论	爬虫 + API	每日
+社媒	抖音、小红书、TikTok	API + 爬虫	实时/小时
+供应链	企业公告、行业数据库	API	每周
+3.2 数据管道
+
+数据源 → 采集器 → Kafka → 清洗/标准化 → 实体抽取 → 
+  ├─ 结构化数据 → PostgreSQL
+  ├─ 图谱数据 → Neo4j
+  ├─ 向量数据 → Milvus
+  └─ 分析数据 → ClickHouse
+
+●采集器：Python Scrapy / Playwright / 官方 API SDK。
+●清洗：去重、去噪、格式化、语言识别。
+●实体抽取：NER 模型识别公司、技术、产品、人物、赛道。
+●关系抽取：基于规则 + 模型抽取实体关系。
+3.3 数据库设计
+3.3.1 PostgreSQL 核心表
+用户与权限
+
+CREATE TABLE tenants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    plan VARCHAR(50) NOT NULL DEFAULT 'free',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
+    role VARCHAR(50) NOT NULL DEFAULT 'member',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE roles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(50) UNIQUE NOT NULL,
+    permissions JSONB NOT NULL
+);
+
+公司能力画像
+
+CREATE TABLE company_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    name VARCHAR(255) NOT NULL,
+    tech_stack JSONB,
+    patents JSONB,
+    talents JSONB,
+    funding JSONB,
+    channels JSONB,
+    customers JSONB,
+    supply_chain JSONB,
+    capability_vector VECTOR(1536),
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+赛道与机会
+
+CREATE TABLE tracks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    parent_id UUID REFERENCES tracks(id),
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE opportunities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    track_id UUID REFERENCES tracks(id),
+    title VARCHAR(255) NOT NULL,
+    summary TEXT,
+    score JSONB,
+    evidence JSONB,
+    status VARCHAR(50) DEFAULT 'draft',
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE scorecards (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    name VARCHAR(255) NOT NULL,
+    weights JSONB NOT NULL,
+    dimensions JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+验证实验
+
+CREATE TABLE experiments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    opportunity_id UUID REFERENCES opportunities(id),
+    hypothesis TEXT NOT NULL,
+    method VARCHAR(100) NOT NULL,
+    metrics JSONB,
+    result JSONB,
+    status VARCHAR(50) DEFAULT 'running',
+    started_at TIMESTAMPTZ,
+    ended_at TIMESTAMPTZ
+);
+
+报告与预警
+
+CREATE TABLE reports (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    opportunity_id UUID REFERENCES opportunities(id),
+    title VARCHAR(255),
+    content JSONB,
+    format VARCHAR(50),
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(id),
+    track_id UUID REFERENCES tracks(id),
+    signal_type VARCHAR(100),
+    payload JSONB,
+    status VARCHAR(50) DEFAULT 'pending',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+3.3.2 Neo4j 知识图谱 Schema
+节点标签：
+●Company：公司
+●Technology：技术
+●Product：产品
+●Track：赛道
+●Opportunity：机会
+●Patent：专利
+●Funding：融资
+●Talent：人才
+●Policy：政策
+●Signal：信号
+关系类型：
+●(:Company)-[:OWNS]->(:Technology)
+●(:Technology)-[:APPLIES_TO]->(:Track)
+●(:Track)-[:CONTAINS]->(:Opportunity)
+●(:Opportunity)-[:DEPENDS_ON]->(:Technology)
+●(:Signal)-[:IMPACTS]->(:Track)
+●(:Company)-[:COMPETES_WITH]->(:Company)
+●(:Patent)-[:BELONGS_TO]->(:Company)
+●(:Funding)-[:INVESTS_IN]->(:Company)
+Cypher 示例：
+// 查询某技术相关的赛道和机会 MATCH (t:Technology {name: 'AI'})-[:APPLIES_TO]->(tr:Track)-[:CONTAINS]->(o:Opportunity) RETURN tr.name, o.title, o.score ORDER BY o.score DESC LIMIT 10; 3.3.3 Milvus 向量库设计
+集合：signal_embeddings
+字段	类型	说明
+id	VARCHAR	主键
+embedding	FLOAT_VECTOR(1536)	向量
+signal_type	VARCHAR	信号类型
+source	VARCHAR	来源
+content	VARCHAR	原文
+metadata	JSON	元数据
+created_at	INT64	时间戳
+索引：IVF_FLAT，距离度量 COSINE。
+检索示例：
+
+search_params = {"metric_type": "COSINE", "params": {"nprobe": 10}}
+results = collection.search(
+    data=[query_embedding],
+    anns_field="embedding",
+    param=search_params,
+    limit=20,
+    expr='signal_type == "policy"'
+)
+
+
+4. 核心模块技术设计
+4.1 公司能力画像
+流程：
+1.用户填写表单或上传文档。
+2.后端解析文档（PDF/Word），抽取技术、专利、人才等信息。
+3.调用 Embedding 模型生成能力向量，存入 PostgreSQL。
+4.同步更新 Neo4j 中的公司节点和关系。
+5.返回能力雷达图和推荐赛道边界。
+关键接口：
+
+# 能力画像向量化
+def build_capability_vector(profile: dict) -> list[float]:
+    text = f"""
+    技术栈: {profile['tech_stack']}
+    专利: {profile['patents']}
+    人才: {profile['talents']}
+    资金: {profile['funding']}
+    渠道: {profile['channels']}
+    """
+    return embed(text)
+
+4.2 趋势雷达
+流程：
+1.Airflow 定时触发采集任务。
+2.采集器抓取政策、论文、专利、融资、新闻。
+3.Kafka 消息队列缓冲。
+4.清洗服务去重、标准化。
+5.NER 抽取技术、公司、赛道实体。
+6.写入 PostgreSQL、Neo4j、Milvus。
+7.趋势侦察 Agent 分析，生成趋势列表。
+趋势评分算法：
+
+def trend_score(signal_count, growth_rate, policy_support, capital_heat):
+    return (
+        0.3 * normalize(signal_count) +
+        0.3 * normalize(growth_rate) +
+        0.2 * policy_support +
+        0.2 * normalize(capital_heat)
+    )
+
+4.3 机会图谱
+流程：
+1.从 Neo4j 查询赛道、公司、技术、专利、融资关系。
+2.前端 Cytoscape.js 渲染图谱。
+3.用户可下钻节点，查看详情。
+4.空白点识别：基于图算法（如社区发现、中心性）找出稀疏区域。
+空白点算法：
+// 找出连接度低的赛道节点 MATCH (t:Track) OPTIONAL MATCH (t)-[r]-() WITH t, count(r) AS degree WHERE degree < 5 RETURN t.name, degree ORDER BY degree ASC; 4.4 需求探针
+流程：
+1.接入社媒、评论、招标、招聘数据。
+2.文本清洗、分词、情感分析。
+3.使用 BERT 聚类痛点（HDBSCAN）。
+4.计算需求强度： 
+○频率：痛点出现次数
+○情感强度：负面情感占比
+○付费意愿：评论中提及价格/预算
+○紧迫度：时间关键词
+5.生成访谈提纲、问卷、落地页测试方案。
+需求强度公式：
+
+def demand_score(freq, sentiment, willingness, urgency):
+    return (
+        0.3 * normalize(freq) +
+        0.3 * sentiment +
+        0.2 * willingness +
+        0.2 * urgency
+    )
+
+4.5 赛道评分卡
+数据结构：
+
+{
+  "dimensions": [
+    {"key": "market_size", "name": "市场空间", "weight": 0.20, "score": 4.2},
+    {"key": "demand", "name": "需求真实性", "weight": 0.20, "score": 3.8},
+    {"key": "tech_maturity", "name": "技术成熟度", "weight": 0.15, "score": 4.0},
+    {"key": "competition", "name": "竞争壁垒", "weight": 0.15, "score": 3.5},
+    {"key": "business_model", "name": "商业模式", "weight": 0.10, "score": 3.9},
+    {"key": "timing", "name": "时机", "weight": 0.10, "score": 4.5},
+    {"key": "fit", "name": "内部匹配度", "weight": 0.10, "score": 4.1}
+  ]
+}
+
+综合评分：
+
+def total_score(dimensions):
+    return sum(d['weight'] * d['score'] for d in dimensions)
+
+可解释性：每个维度分数下钻到证据链，证据来自 Agent 输出和原始信号。
+4.6 验证实验管理
+流程：
+1.用户创建实验，定义假设、方法、指标。
+2.系统生成实验方案（落地页、问卷、访谈提纲）。
+3.实验数据自动采集（埋点、API 回传）。
+4.实验结束，结论回写赛道评分。
+5.更新机会卡片状态。
+实验状态机：
+
+draft → running → completed → archived
+         ↓
+      cancelled
+
+4.7 决策报告生成
+流程：
+1.汇总赛道评分、Agent 结论、实验数据。
+2.决策综合 Agent 生成报告草稿。
+3.用户编辑、调整。
+4.导出 PPT/Word/Notion/PDF。
+报告生成模板引擎：Jinja2 + python-pptx + docxtpl。
+4.8 监控与复盘
+流程：
+1.监控预警 Agent 定时扫描信号更新。
+2.匹配规则：政策变化、融资事件、大厂入场、技术突破。
+3.触发预警，站内/邮件通知。
+4.用户复盘，记录决策依据。
+5.评分模型校准：根据复盘结果调整权重。
+预警规则示例：
+
+rules:
+  - name: 大厂入场
+    condition: signal.type == "funding" and signal.amount > 100000000 and signal.company in large_tech
+    action: alert
+  - name: 政策利好
+    condition: signal.type == "policy" and signal.sentiment == "positive" and signal.track in user_tracks
+    action: alert
+
+
+5. AI Agent 技术设计
+5.1 Agent 编排架构
+采用 LangGraph 构建有向图工作流：
+
+[趋势侦察] → [需求挖掘] → [市场测算] → [竞争情报] → [技术评估] → [决策综合] → [监控预警]
+     ↑                                                                          ↓
+     └────────────────────────── 反馈循环 ──────────────────────────────────────┘
+
+每个 Agent 是一个节点，状态在图中传递。支持并行执行、条件分支、循环。
+5.2 Agent 通用结构
+
+class BaseAgent:
+    def __init__(self, llm, retriever, tools):
+        self.llm = llm
+        self.retriever = retriever
+        self.tools = tools
+
+    async def run(self, state: dict) -> dict:
+        # 1. 检索相关上下文
+        context = await self.retriever.retrieve(state['query'])
+        # 2. 构建 Prompt
+        prompt = self.build_prompt(state, context)
+        # 3. 调用 LLM
+        response = await self.llm.ainvoke(prompt)
+        # 4. 解析输出
+        result = self.parse_response(response)
+        # 5. 更新状态
+        state.update(result)
+        return state
+
+5.3 各 Agent 详细设计
+5.3.1 趋势侦察 Agent
+●输入：政策、论文、专利、新闻信号。
+●工具：search_policies, search_patents, search_news。
+●Prompt 模板：
+
+你是一个科技趋势分析师。基于以下信号，识别出未来 6-12 个月可能爆发的技术方向。
+信号：{context}
+输出 JSON：
+{
+  "trends": [
+    {"name": "", "description": "", "confidence": 0.0-1.0, "evidence": [""]}
+  ]
+}
+
+5.3.2 需求挖掘 Agent
+●输入：社媒、评论、招标、招聘。
+●工具：cluster_pain_points, sentiment_analysis。
+●输出：痛点聚类、需求强度评分。
+5.3.3 市场测算 Agent
+●输入：行业数据、财报、融资。
+●工具：tam_sam_som_calculator。
+●方法：自下而上（客户数 × 客单价）+ 自上而下（行业规模 × 渗透率）。
+5.3.4 竞争情报 Agent
+●输入：竞品、专利、招聘。
+●工具：competitor_discovery, patent_analysis。
+●输出：竞争格局、大厂威胁评分。
+5.3.5 技术评估 Agent
+●输入：技术文档、专利。
+●工具：trl_assessment, crl_assessment。
+●输出：六维评分（TRL/CRL/BRL/IPRL/TMRL/FRL）。
+5.3.6 决策综合 Agent
+●输入：各 Agent 输出。
+●工具：scorecard_calculator, report_generator。
+●输出：综合评分、决策报告。
+5.3.7 监控预警 Agent
+●输入：信号更新。
+●工具：rule_engine, anomaly_detection。
+●输出：预警通知、复盘建议。
+5.4 RAG 流程
+
+Query → Embedding → Milvus 检索 → Top-K 文档 → Rerank → 
+  → Prompt 组装 → LLM 生成 → 引用来源 → 输出
+
+混合检索：向量检索 + 关键词检索（BM25），融合排序。
+引用来源：每个结论附带 source_id，前端可下钻。
+5.5 模型路由与成本控制
+●简单任务：Qwen2.5-7B / GPT-3.5。
+●复杂分析：GPT-4o / Claude 3.5。
+●私有化：本地部署 Qwen2.5-72B。
+●缓存：相同 Query 结果缓存 24 小时。
+
+6. 接口设计
+6.1 通用规范
+●协议：HTTPS
+●认证：JWT Bearer Token
+●格式：JSON
+●版本：/api/v1/
+●错误码：
+状态码	说明
+200	成功
+400	参数错误
+401	未认证
+403	无权限
+404	资源不存在
+429	限流
+500	服务器错误
+6.2 核心 API
+6.2.1 能力画像
+POST /api/v1/company/profile
+请求：
+
+{
+  "name": "某某科技",
+  "tech_stack": ["AI", "大数据"],
+  "patents": ["专利1", "专利2"],
+  "talents": {"算法": 10, "工程": 20},
+  "funding": {"round": "A", "amount": 10000000},
+  "channels": ["直销", "代理"],
+  "customers": ["制造业", "医疗"]
+}
+
+响应：
+
+{
+  "id": "uuid",
+  "capability_vector": [0.1, 0.2, ...],
+  "radar": {"技术": 4.5, "人才": 3.8, "资金": 3.2},
+  "recommended_tracks": ["AI+制造", "AI+医疗"]
+}
+
+6.2.2 趋势雷达
+GET /api/v1/trends?industry=AI&region=CN&limit=20
+响应：
+
+{
+  "trends": [
+    {
+      "id": "uuid",
+      "name": "具身智能",
+      "description": "...",
+      "confidence": 0.85,
+      "direction": "tailwind",
+      "evidence": [{"source": "政策", "url": "..."}]
+    }
+  ]
+}
+
+6.2.3 机会图谱
+GET /api/v1/opportunities?track_id=uuid
+响应：
+
+{
+  "opportunities": [
+    {
+      "id": "uuid",
+      "title": "AI 质检",
+      "score": 4.2,
+      "status": "verified",
+      "evidence": ["..."]
+    }
+  ]
+}
+
+6.2.4 赛道评分
+GET /api/v1/opportunities/{id}/score
+响应：
+
+{
+  "opportunity_id": "uuid",
+  "total_score": 4.1,
+  "dimensions": [
+    {"key": "market_size", "name": "市场空间", "weight": 0.2, "score": 4.2, "evidence": ["..."]}
+  ],
+  "risk_alerts": ["大厂入场风险"]
+}
+
+6.2.5 需求探针
+POST /api/v1/demand/probe
+请求：
+
+{
+  "keywords": ["AI 质检", "制造业"],
+  "sources": ["weibo", "zhihu", "zhaopin"],
+  "time_range": "30d"
+}
+
+响应：
+
+{
+  "task_id": "uuid",
+  "status": "running"
+}
+
+GET /api/v1/demand/probe/{task_id}
+响应：
+
+{
+  "status": "completed",
+  "pain_points": [
+    {"name": "检测精度低", "freq": 120, "sentiment": -0.8, "demand_score": 4.5}
+  ],
+  "suggested_experiments": ["落地页测试", "客户访谈"]
+}
+
+6.2.6 验证实验
+POST /api/v1/experiments
+请求：
+
+{
+  "opportunity_id": "uuid",
+  "hypothesis": "制造业客户愿意为 AI 质检付费",
+  "method": "landing_page",
+  "metrics": {"signup_rate": 0.05}
+}
+
+响应：
+
+{
+  "id": "uuid",
+  "status": "running"
+}
+
+6.2.7 报告生成
+POST /api/v1/reports
+请求：
+
+{
+  "opportunity_id": "uuid",
+  "format": "pptx",
+  "template": "investment_memo"
+}
+
+响应：
+
+{
+  "id": "uuid",
+  "download_url": "https://..."
+}
+
+6.2.8 监控预警
+GET /api/v1/alerts
+响应：
+
+{
+  "alerts": [
+    {
+      "id": "uuid",
+      "type": "大厂入场",
+      "payload": {"company": "某大厂", "track": "AI+制造"},
+      "created_at": "2026-09-14T10:00:00Z"
+    }
+  ]
+}
+
+
+7. 非功能设计
+7.1 性能
+场景	目标	方案
+页面响应	≤ 2s	CDN、缓存、SSR
+报告生成	≤ 5min	异步任务、模板预编译
+向量检索	≤ 100ms	Milvus 索引优化
+图谱查询	≤ 500ms	Neo4j 索引、查询优化
+数据采集	日处理 1000 万条	Kafka + 分布式爬虫
+7.2 安全
+●认证：JWT + OAuth2。
+●授权：RBAC，租户隔离。
+●数据加密：传输 TLS 1.3，存储 AES-256。
+●审计：操作日志保留 180 天。
+●合规：GDPR、个人信息保护法，支持数据本地化。
+7.3 可扩展性
+●插件式数据源：新增数据源只需实现 DataSource 接口。
+●插件式 Agent：新增 Agent 只需实现 BaseAgent 并注册到 LangGraph。
+●水平扩展：无状态服务可横向扩展，K8s HPA。
+7.4 可观测性
+●指标：Prometheus + Grafana。
+●日志：Loki + ELK。
+●链路：Jaeger + OpenTelemetry。
+●告警：Alertmanager + 企业微信/邮件。
+7.5 可用性
+●SLA：99.9%。
+●容灾：多可用区部署，数据备份。
+●降级：LLM 不可用时返回缓存结果。
+
+8. 部署与运维
+8.1 环境
+环境	用途	配置
+Dev	开发	单机 Docker Compose
+Staging	测试	K8s 小集群
+Prod	生产	K8s 多节点，多可用区
+8.2 CI/CD
+
+Git Push → GitLab CI → 单元测试 → 构建镜像 → 推送 Registry → 
+  → ArgoCD 同步 → K8s 滚动更新 → 健康检查
+
+8.3 监控看板
+●系统指标：CPU、内存、磁盘、网络。
+●业务指标：机会发现数、报告生成数、预警数。
+●AI 指标：LLM 调用次数、Token 消耗、RAG 命中率。
+8.4 备份与恢复
+●PostgreSQL：每日全量 + WAL 归档。
+●Neo4j：每日快照。
+●Milvus：每日快照。
+●MinIO：版本控制 + 跨区域复制。
+
+9. 测试策略
+测试类型	范围	工具
+单元测试	函数、类	pytest, Jest
+集成测试	API、数据库	pytest, Testcontainers
+E2E 测试	用户流程	Playwright
+性能测试	并发、响应	Locust, k6
+AI 评测	Agent 输出质量	人工评估 + 自动化指标
+安全测试	渗透、漏洞	OWASP ZAP
+AI 评测指标：
+●准确性：人工标注对比。
+●一致性：多次运行结果方差。
+●可解释性：证据链完整率。
+
+10. 风险与应对
+风险	影响	应对
+数据源不稳定	信号缺失	多源冗余，人工上传兜底
+LLM 幻觉	错误结论	RAG + 引用来源，人工复核
+模型成本高	运营成本	模型路由，缓存，私有化
+数据合规	法律风险	本地化部署，脱敏
+评分模型偏差	决策误导	定期校准，版本管理
+高并发	性能下降	异步、缓存、水平扩展
+
+11. 附录
+11.1 技术栈汇总
+类别	技术
+前端	Next.js, React, Ant Design, ECharts, Cytoscape.js
+后端	FastAPI, NestJS, Celery, LangGraph
+AI	GPT-4o, Claude 3.5, Qwen2.5, LangChain, LlamaIndex
+数据	PostgreSQL, Neo4j, Milvus, Redis, ClickHouse, Kafka
+部署	Docker, Kubernetes, ArgoCD
+监控	Prometheus, Grafana, Loki, Jaeger
+11.2 参考资料
+●《赛道罗盘 TrackCompass 产品设计文档 V1.0》
+●LangGraph 官方文档
+●Milvus 官方文档
+●Neo4j 官方文档
+●OWASP 安全指南
+
+总结：本技术文档基于产品设计文档，给出了赛道罗盘的系统架构、数据模型、核心模块实现、AI Agent 设计、接口规范、非功能设计、部署运维和测试策略。技术方案采用分层架构、七 Agent 编排、知识图谱 + 向量库 + RAG 的认知层，支持 SaaS 与私有化部署，满足科技公司商机发现与赛道选择的决策需求。
+

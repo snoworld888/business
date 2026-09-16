@@ -1,0 +1,1022 @@
+{"ts": "2026-09-14T18:15:33", "level": "INFO", "logger": "app.main", "trace_id": "-", "msg": "已托管前端构建产物: D:\\01code\\business\\trackcompass\\frontend\\dist"}
+INFO:     Started server process [20020]
+INFO:     Waiting for application startup.
+{"ts": "2026-09-14T18:15:33", "level": "INFO", "logger": "app.main", "trace_id": "-", "msg": "TrackCompass 启动完成 env=dev db=sqlite ui=served"}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8020 (Press CTRL+C to quit)
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "240427fe48754cb9", "msg": "POST /api/v1/auth/login 68.4ms"}
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "86aada1c2aae43cd", "msg": "GET /api/v1/opportunities 4.0ms"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CB6BCB0>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'GET']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'GET']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'GET']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'1586'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:47 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: GET http://localhost:9380/api/v1/datasets?id=19a68252b01311f18c92bfc493440fd4&page_size=1 \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'GET']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "app.services.rag", "trace_id": "a2390d2e1b7042aa", "msg": "RAG 后端 = ragflow @ http://localhost:9380（dataset=19a68252b01311f18c92bfc493440fd4）"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE45450>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE45590>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:47 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:47 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:47", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CCEB950>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CCEBE10>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:47", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:15:50 GMT'), (b'Content-Length', b'1851')])"}
+{"ts": "2026-09-14T18:15:51", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:15:53 GMT'), (b'Content-Length', b'1876')])"}
+{"ts": "2026-09-14T18:15:54", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE42570>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CCB7790>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CCB7CE0>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:53 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:54", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:53 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:54", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE68D50>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE69E50>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:15:54 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:15:54", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE74500>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:15:54", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:01 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:00", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:06 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:05", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:05", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:10 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:10", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE74C80>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:10 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:10", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CD0F850>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:21 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:21", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE80C90>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10118'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:21 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:21", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE90AE0>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:21", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:25 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:26", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "INFO", "logger": "app.agents.orchestrator", "trace_id": "a2390d2e1b7042aa", "msg": "触发反馈循环 #1，冲突点=['与公司现有能力匹配度偏低，落地需外部补能力']"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CD4BF50>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE94890>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:25 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:26", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:25 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:26", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE6CC00>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE6D5A0>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:26", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:31 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:30", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:34 GMT'), (b'Content-Length', b'1778')])"}
+{"ts": "2026-09-14T18:16:33", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE72670>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE72A30>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE80050>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:34 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:34", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:34 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:34", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:34 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:34", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE8DED0>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE8E050>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE68210>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:38 GMT'), (b'Content-Length', b'1758')])"}
+{"ts": "2026-09-14T18:16:38", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:38", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:42 GMT'), (b'Content-Length', b'1625')])"}
+{"ts": "2026-09-14T18:16:41", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:41", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:46 GMT'), (b'Content-Length', b'2011')])"}
+{"ts": "2026-09-14T18:16:46", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE68DE0>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:46 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:46", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE50170>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:16:54 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:55", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE50770>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9573'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:16:55 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:16:55", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE7A7B0>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:16:55", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:01 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:16:59", "level": "INFO", "logger": "httpx", "trace_id": "a2390d2e1b7042aa", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "a2390d2e1b7042aa", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.started"}
+{"ts": "2026-09-14T18:16:59", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "a2390d2e1b7042aa", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:00", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a2390d2e1b7042aa", "msg": "POST /api/v1/opportunities/e2e4200d-da0d-40a9-aca3-4970cd4aa14b/analyze 72614.2ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "67d6349c2a1542c1", "msg": "GET /api/v1/health 1.1ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "9158d3367b8e4b5c", "msg": "POST /api/v1/auth/login 380.7ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "d8a35e47bd494e1e", "msg": "POST /api/v1/auth/login 28.3ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "be4f36f7e4294e67", "msg": "POST /api/v1/company/profile 32.8ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "ae93a0ffae764853", "msg": "GET /api/v1/company/profiles 1.6ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "664628e50ba44e37", "msg": "POST /api/v1/company/profile 23.5ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "6252abf98ab0454a", "msg": "GET /api/v1/company/profiles 1.8ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "b349ff3168554203", "msg": "GET /api/v1/company/profile 1.8ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "23ffc6759eda44ea", "msg": "POST /api/v1/company/profile 22.3ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "6778d39250e04ced", "msg": "GET /api/v1/company/profiles 1.7ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a1d41d4bc5ae4cdc", "msg": "GET /api/v1/company/profile 1.2ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "f7b19aa7429049fe", "msg": "POST /api/v1/company/profile 17.8ms"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "trackcompass.access", "trace_id": "11e854457db64d86", "msg": "GET /api/v1/signals/sources 8.1ms"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE79B30>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'7135'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:07 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:06", "level": "INFO", "logger": "httpx", "trace_id": "60c5dd320f754dd6", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE79810>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:06", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:11 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:10", "level": "INFO", "logger": "httpx", "trace_id": "60c5dd320f754dd6", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "60c5dd320f754dd6", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:10", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "60c5dd320f754dd6", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "INFO", "logger": "trackcompass.access", "trace_id": "60c5dd320f754dd6", "msg": "POST /api/v1/trends/scan 4344.2ms"}
+{"ts": "2026-09-14T18:17:11", "level": "INFO", "logger": "trackcompass.access", "trace_id": "5b8d54fc38734bd7", "msg": "GET /api/v1/trends 2.8ms"}
+{"ts": "2026-09-14T18:17:11", "level": "INFO", "logger": "trackcompass.access", "trace_id": "abab1e76988b4685", "msg": "POST /api/v1/trends/bc6b3c49-b83c-459e-8e9b-d7e1c0f9804e/to-pool 3.1ms"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC2850>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC28A0>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:11 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:11", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:11 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:11", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC2E90>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC3070>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:11", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:16 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:15", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:19 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:19", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC3ED0>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC3980>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC3F20>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:19 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:19", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:19 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:19", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDE8EB0>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDE8F00>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:19 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:19", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDE96D0>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:19", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:24 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:24", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:29 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:30", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:36 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:36", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC7160>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:37 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:36", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC6C10>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:36", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:47 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:46", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDE9CC0>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'9938'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:47 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:46", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEA440>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:46", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:51 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:51", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "INFO", "logger": "app.agents.orchestrator", "trace_id": "5d2b76de46e949ad", "msg": "触发反馈循环 #1，冲突点=['与公司现有能力匹配度偏低，落地需外部补能力']"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEB430>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEB480>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:51 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:51", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEBA70>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:51 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:17:51", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE100F0>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:17:51", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:56 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:17:57", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:17:57", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:17:59 GMT'), (b'Content-Length', b'1657')])"}
+{"ts": "2026-09-14T18:18:00", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE11130>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE10F00>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE11310>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:59 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:00", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:59 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:00", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDE83C0>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:17:59 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:00", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE12350>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CE124E0>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:00", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:05 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:18:05", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:05", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:11 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:18:12", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:12", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:15 GMT'), (b'Content-Length', b'1965')])"}
+{"ts": "2026-09-14T18:18:15", "level": "INFO", "logger": "httpx", "trace_id": "-", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "-", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "-", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEA580>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:18:15 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:15", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEB430>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:15", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:24 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:18:23", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEAEE0>"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:23", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10633'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:18:24 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:24", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CDEA300>"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:24", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:30 GMT'), (b'Transfer-Encoding', b'chunked')])"}
+{"ts": "2026-09-14T18:18:30", "level": "INFO", "logger": "httpx", "trace_id": "5d2b76de46e949ad", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "5d2b76de46e949ad", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "5d2b76de46e949ad", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "INFO", "logger": "trackcompass.access", "trace_id": "5d2b76de46e949ad", "msg": "POST /api/v1/opportunities/92a69a73-767e-41ad-8850-6196781d9987/analyze 79132.4ms"}
+{"ts": "2026-09-14T18:18:30", "level": "INFO", "logger": "trackcompass.access", "trace_id": "c774dbffb7f24a23", "msg": "GET /api/v1/opportunities/92a69a73-767e-41ad-8850-6196781d9987/score 2.4ms"}
+{"ts": "2026-09-14T18:18:30", "level": "INFO", "logger": "trackcompass.access", "trace_id": "791612ddc04d4321", "msg": "POST /api/v1/opportunities/92a69a73-767e-41ad-8850-6196781d9987/score/preview 2.5ms"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC7520>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'6204'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:18:30 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:30", "level": "INFO", "logger": "httpx", "trace_id": "f39b57389c024de1", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "connect_tcp.started host='localhost' port=11434 local_address=None timeout=300 socket_options=None"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CEC4E60>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:30", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=utf-8'), (b'Date', b'Mon, 14 Sep 2026 10:18:33 GMT'), (b'Content-Length', b'1703')])"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "httpx", "trace_id": "f39b57389c024de1", "msg": "HTTP Request: POST http://localhost:11434/api/chat \"HTTP/1.1 200 OK\""}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "f39b57389c024de1", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:33", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "f39b57389c024de1", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "f39b57389c024de1", "msg": "POST /api/v1/demand/probe 3558.8ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "c49283783cff4deb", "msg": "POST /api/v1/experiments 18.7ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a632e06625564298", "msg": "GET /api/v1/experiments/templates 0.3ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "216a25bf9a5d4196", "msg": "PATCH /api/v1/experiments/8b945e34-86e2-4b98-b99d-2aef90596979 7.6ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "95bc25835df64e56", "msg": "PATCH /api/v1/experiments/8b945e34-86e2-4b98-b99d-2aef90596979 17.9ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "9c3f30f24bcf4389", "msg": "PATCH /api/v1/experiments/8b945e34-86e2-4b98-b99d-2aef90596979 15.5ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "0baf06f255674bb9", "msg": "POST /api/v1/experiments/8b945e34-86e2-4b98-b99d-2aef90596979/writeback 15.6ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "7dcf79a02a904ca8", "msg": "POST /api/v1/reports 27.4ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "83e24205d5944b80", "msg": "POST /api/v1/reports/438462a6-ebf1-48d6-8f03-4380c5a226d5/export 15.2ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "f2d0c9c61e6a4317", "msg": "GET /api/v1/alerts 3.7ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "f5d2883081684321", "msg": "POST /api/v1/alerts/b5305228-f066-4699-ac68-b5c48b63d076/action 22.0ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "cc50acf2fb0f4956", "msg": "POST /api/v1/alerts/replay 26.3ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "51ad782ff1904af7", "msg": "GET /api/v1/scorecards/calibration/preview 7.3ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "app.services.graph", "trace_id": "08a14cc62f284bc6", "msg": "图谱重建完成: nodes=111"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "08a14cc62f284bc6", "msg": "GET /api/v1/graph 11.1ms"}
+{"ts": "2026-09-14T18:18:33", "level": "INFO", "logger": "trackcompass.access", "trace_id": "8b3f124834e542eb", "msg": "GET /api/v1/graph/insights 6.5ms"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "6d2403c6ea7a4820", "msg": "POST /api/v1/auth/login 42.0ms"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a98ebdc1934d4bcb", "msg": "GET /api/v1/admin/users 1.2ms"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "8b604187c8514b2f", "msg": "GET /api/v1/opportunities 2.0ms"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "9f9cfee69b404b56", "msg": "connect_tcp.started host='localhost' port=9380 local_address=None timeout=60 socket_options=None"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "9f9cfee69b404b56", "msg": "connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x000001FD5CF11D10>"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "send_request_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "send_request_headers.complete"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "send_request_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "send_request_body.complete"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "receive_response_headers.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'', [(b'content-type', b'application/json'), (b'content-length', b'10638'), (b'vary', b'Origin'), (b'date', b'Mon, 14 Sep 2026 10:18:34 GMT'), (b'server', b'hypercorn-h11')])"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "httpx", "trace_id": "9f9cfee69b404b56", "msg": "HTTP Request: POST http://localhost:9380/api/v1/retrieval \"HTTP/1.1 200 \""}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "receive_response_body.started request=<Request [b'POST']>"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "receive_response_body.complete"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "response_closed.started"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.http11", "trace_id": "9f9cfee69b404b56", "msg": "response_closed.complete"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "9f9cfee69b404b56", "msg": "close.started"}
+{"ts": "2026-09-14T18:18:34", "level": "DEBUG", "logger": "httpcore.connection", "trace_id": "9f9cfee69b404b56", "msg": "close.complete"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "9f9cfee69b404b56", "msg": "GET /api/v1/rag/search 103.2ms"}
+{"ts": "2026-09-14T18:18:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "20925dbfd2594059", "msg": "GET /api/v1/openapi.json 47.8ms"}
+{"ts": "2026-09-14T18:18:35", "level": "INFO", "logger": "trackcompass.access", "trace_id": "bbf99d9bcb0d4e13", "msg": "GET /api/v1/openapi.json 0.5ms"}
+{"ts": "2026-09-14T18:18:35", "level": "INFO", "logger": "trackcompass.access", "trace_id": "14834eed713e48ec", "msg": "GET / 22.8ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "2af40cdf96e34716", "msg": "GET /api/v1/company/profile 4.1ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "ad44fbd736b94f82", "msg": "GET /api/v1/company/profiles 7.3ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "9d2766b6ce3b486a", "msg": "GET /api/v1/company/profile 14.1ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "c560c59b32c64251", "msg": "GET /api/v1/alerts 24.3ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "4cb7fc83c05e4bb5", "msg": "GET /api/v1/company/profiles 8.9ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "03e6c7e3bb4f4be6", "msg": "GET /api/v1/company/tracks 40.3ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "ce5c5725b1b540da", "msg": "GET /api/v1/alerts 7.1ms"}
+{"ts": "2026-09-14T18:38:34", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a22c2d064677474d", "msg": "GET /api/v1/company/tracks 13.0ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "e0351ac53b0f423d", "msg": "GET /api/v1/opportunities 8.3ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "51183a725f8043f3", "msg": "GET /api/v1/experiments 12.3ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "dda2e950f2414342", "msg": "GET /api/v1/reports 14.7ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "5eb22f1444574d6b", "msg": "GET /api/v1/alerts 20.7ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "251b787646e44b17", "msg": "GET /api/v1/trends 20.2ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "dd3bba9a31fe4b3b", "msg": "GET /api/v1/opportunities 19.2ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "74c1d50847844a06", "msg": "GET /api/v1/experiments 13.7ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "6ec821bb2e154052", "msg": "GET /api/v1/reports 13.4ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a8265e21d6c145ca", "msg": "GET /api/v1/trends 12.2ms"}
+{"ts": "2026-09-14T18:38:47", "level": "INFO", "logger": "trackcompass.access", "trace_id": "fbdbfe181b834d8b", "msg": "GET /api/v1/alerts 12.9ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "de2c60ac60944aa7", "msg": "GET /api/v1/opportunities 14.1ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "3892b29a501044de", "msg": "GET /api/v1/experiments 14.2ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "103c59c5022b41e3", "msg": "GET /api/v1/reports 14.4ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "2a8d22a6e0d54277", "msg": "GET /api/v1/trends 14.7ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "da1baa62e79144b9", "msg": "GET /api/v1/alerts 16.9ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "59a8c8a15b224847", "msg": "GET /api/v1/reports 11.7ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "9f2eb43903544f82", "msg": "GET /api/v1/opportunities 14.8ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "a263c81251684ce9", "msg": "GET /api/v1/alerts 15.5ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "baaf4a7026544d09", "msg": "GET /api/v1/experiments 17.8ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "da741fd22ece4244", "msg": "GET /api/v1/trends 17.3ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "42845888a13547b7", "msg": "GET /api/v1/alerts 4.1ms"}
+{"ts": "2026-09-14T18:38:50", "level": "INFO", "logger": "trackcompass.access", "trace_id": "5af8788a4d3e423b", "msg": "GET /api/v1/alerts 4.1ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "ecc59bdd87a34fed", "msg": "GET /api/v1/company/profile 7.5ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "503b50c1f3424225", "msg": "GET /api/v1/company/profiles 7.7ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "719fd66319bd49b5", "msg": "GET /api/v1/company/profile 6.3ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "7369e970e6724c1d", "msg": "GET /api/v1/company/tracks 23.2ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "4d03cd95ac934314", "msg": "GET /api/v1/company/profiles 6.5ms"}
+{"ts": "2026-09-14T18:38:54", "level": "INFO", "logger": "trackcompass.access", "trace_id": "872cc59cb96548e0", "msg": "GET /api/v1/company/tracks 11.3ms"}
+{"ts": "2026-09-14T18:38:58", "level": "INFO", "logger": "trackcompass.access", "trace_id": "54a0740847d34edf", "msg": "GET /api/v1/trends 5.5ms"}
+{"ts": "2026-09-14T18:38:58", "level": "INFO", "logger": "trackcompass.access", "trace_id": "b66ddc63974042c3", "msg": "GET /api/v1/trends 5.5ms"}

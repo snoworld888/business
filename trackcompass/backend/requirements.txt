@@ -1,0 +1,24 @@
+# ---- TrackCompass backend deps (offline-friendly core) ----
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+SQLAlchemy==2.0.36
+PyJWT==2.10.1
+python-multipart==0.0.20
+httpx==0.28.1
+networkx==3.4.2
+jieba==0.42.1
+Jinja2==3.1.5
+numpy==2.2.1
+pytest==8.3.4
+# ---- optional: real infra adapters (not required for MVP local run) ----
+# neo4j==5.27.0          # 对应 services/graph.py: Neo4jGraphStore
+# pymilvus==2.4.9        # 对应 services/vector_store.py: MilvusVectorStore
+# psycopg[binary]==3.2.3 # 生产 PostgreSQL 16
+# pgvector==0.3.6
+# python-pptx==1.0.2     # 报告导出 PPT
+# docxtpl==0.18.0        # 报告导出 Word
+# celery==5.4.0          # 异步任务
+# redis==5.2.1
+# kafka-python==2.0.2

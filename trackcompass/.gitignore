@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# 本地数据与产物
+*.db
+*.db-wal
+*.db-shm
+backend/generated_reports/
+backend/.env
+.env
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# 编辑器
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

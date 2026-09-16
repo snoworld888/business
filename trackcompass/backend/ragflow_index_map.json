@@ -1,0 +1,290 @@
+{
+ "41b9e2db-116f-48e8-b44f-a2f40071e13e": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于印发《知识产权保护和运用“十五五”规划》的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/202607/content_7077200.htm"
+ },
+ "8bba5982-4f1a-4d58-94d3-53e63e63b540": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于深入实施“人工智能+”行动的意见",
+  "url": "https://www.gov.cn/zhengce/zhengceku/202508/content_7037862.htm"
+ },
+ "ee8ad373-3b6e-49db-aa5f-ec45cd64b534": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于印发《国务院工作规则》的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2023-03/24/content_5748128.htm"
+ },
+ "0d83e78c-b3f1-4ecb-8fd3-697f96a28ad6": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "促进个体工商户发展条例",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-10/25/content_5721592.htm"
+ },
+ "cd84f72e-48f8-494f-9b98-ed47c7bc6978": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院办公厅关于进一步加强商品过度包装治理的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-09/08/content_5708858.htm"
+ },
+ "6969a44a-86ce-4c45-8d3a-5df48062a096": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院办公厅关于进一步规范行政裁量权基准制定和管理工作的意见",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-08/17/content_5705729.htm"
+ },
+ "2019dba6-5277-434a-b3bf-eaf71d216a72": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于落实《政府工作报告》重点工作分工的意见",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-03/25/content_5681343.htm"
+ },
+ "1863488a-988d-4fab-b76e-54ec68962cb3": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于印发“十四五”市场监管现代化规划的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-01/27/content_5670717.htm"
+ },
+ "290d430b-c2c7-448a-9bc9-ba5d4bde6006": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于印发“十四五”旅游业发展规划的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-01/20/content_5669468.htm"
+ },
+ "53517735-ee7a-425e-bb68-a856a6b84f85": {
+  "source": "国务院文件",
+  "signal_type": "policy",
+  "title": "国务院关于印发“十四五”数字经济发展规划的通知",
+  "url": "https://www.gov.cn/zhengce/zhengceku/2022-01/12/content_5667817.htm"
+ },
+ "18fedc35-8d05-46d9-8589-537b792de7ff": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "计算机视觉在智慧医疗中的应用",
+  "url": "https://doi.org/10.37155/2717-5170-0601-29"
+ },
+ "b059a458-b537-472a-8354-5ff2e5e08ece": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "GS-MGF-LPLs:计算机视觉辅助的不确定性甲状腺结节超声图像分割方法",
+  "url": "https://doi.org/10.70693/cjst.v1i3.1324"
+ },
+ "33bbb19e-adc3-468a-8d3a-ef79ee9bfafe": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "中国图象图形学报》面向计算机视觉任务的数据生成与应用专栏简介",
+  "url": "https://doi.org/10.11834/jig.2500011"
+ },
+ "81d8a023-6e19-490f-8451-1900c9963335": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "基于事件相机的目标检测与跟踪算法综述",
+  "url": "https://doi.org/10.3788/lop241073"
+ },
+ "e28c17c6-633b-4fc7-b613-b04b2adfe50b": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "元光场事件计算成像（特邀",
+  "url": "https://doi.org/10.3788/lop241380"
+ },
+ "ff2ad36e-8c90-4571-903e-de0ece6fd333": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "OpenCV计算机视觉库",
+  "url": "https://doi.org/10.57841/casdc.0005945"
+ },
+ "ee1dc90f-ccd0-46fd-ad45-deee52fea364": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "光学卷积计算的进展与挑战（特邀",
+  "url": "https://doi.org/10.3788/aos240782"
+ },
+ "e9f28e25-9395-45d7-a541-7f0b63e3f5e4": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "Recent advances in data generation and its applications in computer vision",
+  "url": "https://doi.org/10.11834/jig.250085"
+ },
+ "e2ac78bf-7a84-4467-9206-883b9af7aaaf": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "基于YOLOv9的小目标检测算法改进研究",
+  "url": "https://doi.org/10.54254/3050-2187/2025.26504"
+ },
+ "c267286b-1f86-4b5b-be11-51c28dd598a1": {
+  "source": "OpenAlex",
+  "signal_type": "paper",
+  "title": "OpenCV计算机视觉库-20251203",
+  "url": "https://doi.org/10.57841/casdc.0006143"
+ },
+ "2963cbd5-049e-45df-9323-8c00dfe6caf4": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "基于计算机视觉的石化火灾智能监测研究",
+  "url": "https://doi.org/10.37155/2717-5170-0806-76"
+ },
+ "f0c8052e-26eb-4083-b1e6-714fcea68941": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "计算机图形图像处理技术在视觉传达系统中的应用研究",
+  "url": "https://doi.org/10.37155/2717-5170-0401-11"
+ },
+ "75ac9dad-7d9a-4e22-a92b-4a2841a20e20": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "视觉传达设计在网络广告中的应用",
+  "url": "https://doi.org/10.37155/2717-5170-0508-38"
+ },
+ "cd3694d6-11d6-4a6c-a8da-e9f477f08673": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "视觉思维在电视画面编辑中的应用探讨",
+  "url": "https://doi.org/10.37155/2717-5170-0602-43"
+ },
+ "90241999-8c4f-473a-afc1-b94b801ac76c": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "计算机视觉在智能制造中的应用与优化",
+  "url": "https://doi.org/10.37155/2661-4669-0710-19"
+ },
+ "e4ad5390-02d4-4082-a650-9eff57f12e76": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "基于机器视觉的非标自动化装配系统设计研究",
+  "url": "https://doi.org/10.32629/acair.v4i2.20399"
+ },
+ "e205e664-8c41-4c2a-9b9c-f924abdcc646": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "Trusted Estimation of Object Tracking in Computer Vision",
+  "url": "https://doi.org/10.12677/aam.2021.107259"
+ },
+ "287687fc-2d81-4263-9471-545108bc5a2f": {
+  "source": "Crossref",
+  "signal_type": "paper",
+  "title": "基于机器视觉的皮革面料缺陷自动检测系统设计",
+  "url": "https://doi.org/10.37155/2717-5170-0607-47"
+ },
+ "93a83583-adf8-4890-bd4b-06a4554129a6": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "项目做出来了，然后呢？很多创业者其实卡在了“被看见”这一步",
+  "url": "https://36kr.com/p/3984125136091905?f=rss"
+ },
+ "02eae9d0-3ac1-43cd-b1e7-8c536892c1b8": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "58秒出杯，能拉花的咖啡机器人，在全球70国卖出600万杯",
+  "url": "https://36kr.com/p/3984040347139078?f=rss"
+ },
+ "71af97d9-cf98-4850-a5ec-a63b11480315": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "前高通算法研发经理跨界AI算力板检测，获近亿元战略投资丨36氪首发",
+  "url": "https://36kr.com/p/3983995421440769?f=rss"
+ },
+ "ddefd813-a7a8-406d-9fa5-9596bc9b8c23": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "8点1氪丨选手赛中失禁污染赛道，HYROX中国宣布整改；机构预计美股明年将暴跌21%；苹果推出Siri人工智能",
+  "url": "https://36kr.com/p/3983906594257667?f=rss"
+ },
+ "74c70bfa-a9d1-43f3-bb26-a22222878e1f": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "从「流量依赖」到「信任复利」，跨境电商的下一个增长公式是什么？｜超级会氪厅",
+  "url": "https://36kr.com/p/3982902160063239?f=rss"
+ },
+ "0bccb70a-3210-4466-ac2f-ce6f481b329b": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "最前线丨从消费电子到AIoT生态，绿联的产品边界突围",
+  "url": "https://36kr.com/p/3983259337800710?f=rss"
+ },
+ "50c8037c-6e23-4f20-a547-472baec23280": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "一支蓝光刷的全球化：倍至如何把国货卖进欧洲",
+  "url": "https://36kr.com/p/3983075898440708?f=rss"
+ },
+ "b2c9f9fa-2d64-4aba-a4ff-14405806c0da": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "中控技术俞海斌：AI，驱动流程工业的下一站 | 36氪 2026产业未来大会",
+  "url": "https://36kr.com/p/3978416117464071?f=rss"
+ },
+ "7e848589-3fbc-4875-b973-ad9040938733": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "36氪项目推荐周榜｜从AI算力到智能硬件，本周TOP10项目正在寻找下一增长曲线",
+  "url": "https://36kr.com/p/3982971072707332?f=rss"
+ },
+ "ade366e2-537d-48ba-bcf3-4a9ee0bef835": {
+  "source": "36氪",
+  "signal_type": "news",
+  "title": "36氪2026年度「产业投资行业」系列名册正式发布",
+  "url": "https://36kr.com/p/3982887655160834?f=rss"
+ },
+ "92d7d862-1fc9-404d-ae60-945e0554ca0a": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "苹果 HomePod 软件更新 v27 发布，支持 Apple music 自动过渡",
+  "url": "https://www.ithome.com/1/002/546.htm"
+ },
+ "63b5cf56-57bd-48fd-98f9-5f7ad26a940e": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "沃尔沃卡车启动多款重型电动卡车量产，续航距离可达 700km",
+  "url": "https://www.ithome.com/1/002/544.htm"
+ },
+ "eb8fb335-a554-41b1-9e89-28f2ba241314": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "我国科学家验证新型水下太阳能电池，海面下 10 米正常充电",
+  "url": "https://www.ithome.com/1/002/543.htm"
+ },
+ "e8b7ce18-9d3a-415a-b2c9-4ae2de54f038": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "微信员工辟谣 AI 助手小微“直接读取聊天记录”、“偷看所有隐私”：都是失实的",
+  "url": "https://www.ithome.com/1/002/542.htm"
+ },
+ "f2ce1e15-8a89-4fcf-a841-254f78c7fc32": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "拓品推出 KB22“键盘声卡”：集成专业音频接口，1299 元",
+  "url": "https://www.ithome.com/1/002/541.htm"
+ },
+ "5aab0102-0c23-498f-9f9a-50cf56fbf151": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "网友测试阿里 Qwen3.8-27B AI 模型极限：单张 RTX 3090 约 5 小时开发出僵尸射击游戏",
+  "url": "https://www.ithome.com/1/002/540.htm"
+ },
+ "27fe4298-d067-4ea6-a82b-78aa8275c21a": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "拼多多因虚假广告被罚 54 万元",
+  "url": "https://www.ithome.com/1/002/539.htm"
+ },
+ "81310f44-51b8-477a-83c2-330f74cb5581": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "美光中国台湾地区工会反对资方绩效激励计划，要求营业利润 15% 分成",
+  "url": "https://www.ithome.com/1/002/534.htm"
+ },
+ "b6daf6ca-6712-41f9-b4c9-b5daa981d56e": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "网易《无限大》不设任何角色卡池：纯外观付费，2027 年 1 月 15 日免费登陆 PC、PS5 和移动端",
+  "url": "https://www.ithome.com/1/002/532.htm"
+ },
+ "85aa662c-09c9-42d4-96d9-de283f909c6d": {
+  "source": "IT之家",
+  "signal_type": "news",
+  "title": "冲击英伟达护城河：开源项目让 AMD RX 9060 XT 显卡跑通部分 CUDA 库",
+  "url": "https://www.ithome.com/1/002/531.htm"
+ }
+}
