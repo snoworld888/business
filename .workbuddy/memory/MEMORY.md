@@ -35,6 +35,15 @@
   判据一行日志：`RAG 后端 = ragflow @ ...`
 - ⚠️ 改前端产物**不需要重启后端**（`StaticFiles` 按请求读盘，`curl /` 看 hash 即可确认）
 
+### Git / 提交纪律（2026-09-16 用户指令）
+
+- **仓库根 = `D:\01code\business`**（不是 `trackcompass/`）—— `trackcompass/` 与 `.workbuddy/memory/` 都在同一仓库里
+- ★★ **用户指令（2026-09-16）：每次修改完直接提交**，不必等总指挥签发。沿用既有纪律：
+  逐路径 `git add`（白名单，`diff` ⊆ 白名单、零越界）→ `git commit -F <UTF-8 message 文件>`；
+  **禁 `amend`、禁 `push`**；提交前先 `git status --short` 核验；提交后再 `git status` 确认工作区干净
+- ⚠️ 该指令**只适用于本仓库**。EOS（`bq-eos-*`）是**多窗口共享 working tree**，仍由总指挥统一 commit/push
+- 历史：`0e651cb` Initial commit（2026-09-16 10:39，用户提交）→ `18aa311` 会话态保持 + 探针口径放宽
+
 ### 数据采集器（`backend/app/collector/`）
 
 - `base`(限流/重试/UA) · `normalize`(清洗/语言/行业/质量闸门) · `registry` · `runner` · `sources/` 5 模块
