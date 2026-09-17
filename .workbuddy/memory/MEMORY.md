@@ -326,6 +326,13 @@
 51. **冒烟不能绕过真实入口**：注入状态跑得快，但会系统性掩盖入口链路缺陷（登录必须真实走表单）。
 52. **断言失败信息不能吞异常**（`.catch(() => '')` 会把「页面正在导航」伪装成「整页白屏」）。
     诊断脚本必须把 **console 报错 + `Page.frameNavigated` + 页面文本**一并抓出来。
+54. 🌟🌟 **「可选依赖未装」会掩盖代码缺陷**（2026-09-17 报告导出）。
+    `export()` 里 PPT 分支写死 `content['meta']['template_name']`（该键实际在**顶层**）⇒ 必然 KeyError；
+    但**因为 `python-pptx` 没装**，代码走的是「ImportError → 降级 markdown」分支，
+    **压根没执行到出 bug 的那几行**，所以「导出 PPT」长期显示成功、实际拿到 Markdown。
+    ⇒ 规矩：**只要某功能宣称可用，就必须有「真跑产物」的测试**（打开生成的文件验证页数/标题），
+    不能只测「调用没报错」。另：`requirements.txt` 的注释也要与实际 import 一致
+    （原写 `docxtpl`，代码实际 `from docx import Document` ⇒ 应为 python-docx）。
 53. 🌟 **渲染层要有兜底边界**：单页渲染错误不该让整页不可用。`components/ErrorBoundary.tsx`
     （**路由级 + 顶层**两级）必须显示 `error.message` 并给出路（重试 / 回工作台）；
     通用展示组件（`StatCard` / `MetricBar` / `RankingBars`）的文本属性走 `safeText()`。
@@ -354,4 +361,5 @@ RAGFlow接入评估 · RAG关键词抽取开关评估 · 趋势雷达·能力画
 **`ui_smoke_persist.mjs`** · `check_llm_connection.py` · `check_ragflow.py` · `probe_topology.py` ·
 `probe_two_order.sh` · `diag_ollama_knobs.sh` · `ollama-override.conf` · `compare_ragflow_keyword.py` ·
 `collect_signals.py` · `analyze_trend_similarity.py`
-- `docs/开发约定与踩坑.md` —— **约定 1–53 的案例详情**（MEMORY.md 只留规则与判据）
+- `docs/功能状态总表.md` —— **功能级进度台账**（逐功能点：来源章节/状态/实现位置/证据 + 缺口 G-01~G-16）
+- `docs/开发约定与踩坑.md` —— **约定 1–54 的案例详情**（MEMORY.md 只留规则与判据）
