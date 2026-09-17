@@ -58,15 +58,22 @@ _EXPERIMENT_TEXT_KEYS = (
 )
 
 
-def normalize_experiments(items: Any) -> list[str]:
-    """把「建议验证实验」归一为**字符串列表**。
+def normalize_text_list(
+    items: Any,
+    preferred_keys: tuple[str, ...] = _EXPERIMENT_TEXT_KEYS,
+) -> list[str]:
+    """把「本应是字符串数组」的值归一为 `list[str]`。
 
-    为什么必须归一：模型经常返回结构化对象（`hypothesis` / `target_pain_point` / `metric`），
+    模型经常返回结构化对象（`{"hypothesis": ..., "target_pain_point": ..., "metric": ...}`），
     而前端把它当文本渲染 —— React 会抛 `Objects are not valid as a React child`
     并**卸载整棵树**，表现为**整页白屏**（实测：需求探针点「开始分析」后页面全空，
-    且现场只留下 `document.body.innerText === ''`，极易被误判成「接口没返回」）。
+    现场只留下 `document.body.innerText === ''`，极易被误判成「接口没返回」）。
 
-    归一后仍保留最关键的 `hypothesis`（前端点击建议实验时会拿它预填假设）。
+    规范化规则：
+    - `str` → 原样（去空白）
+    - `dict` → 按 `preferred_keys` 顺序取第一个非空字符串；都没有则把所有字符串值拼接
+    - 其他 → `str(item)`
+    - 去重、去空
     """
     out: list[str] = []
     for item in as_list(items):
@@ -74,7 +81,7 @@ def normalize_experiments(items: Any) -> list[str]:
             text = item.strip()
         elif isinstance(item, dict):
             text = ""
-            for key in _EXPERIMENT_TEXT_KEYS:
+            for key in preferred_keys:
                 value = item.get(key)
                 if isinstance(value, str) and value.strip():
                     text = value.strip()
@@ -90,6 +97,14 @@ def normalize_experiments(items: Any) -> list[str]:
         if text and text not in out:
             out.append(text)
     return out
+
+
+def normalize_experiments(items: Any) -> list[str]:
+    """「建议验证实验」专用入口（语义化命名，便于检索；规则见 `normalize_text_list`）。
+
+    归一后仍保留最关键的 `hypothesis` —— 前端点击建议实验时会拿它预填假设。
+    """
+    return normalize_text_list(items)
 
 
 def signal_weight(sig: SignalView) -> float:

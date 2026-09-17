@@ -9,7 +9,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from app.agents.base import AgentState, BaseAgent, as_dict, as_list, dicts_only
+from app.agents.base import (
+    AgentState,
+    BaseAgent,
+    as_dict,
+    as_list,
+    dicts_only,
+    normalize_text_list,
+)
 from app.services.llm import COMPLEXITY_COMPLEX
 from app.services.scoring import (
     DEFAULT_DIMENSIONS,
@@ -153,6 +160,18 @@ class DecisionSynthesisAgent(BaseAgent):
         维度数不齐时不接管（交给 `backfill_contract` 用规则基线兜底）。
         """
         dims = dicts_only(output.get("dimensions"))
+
+        # ⚠️ `conflicts` 归一：不能把「对象数组」透给前端 —— 前端 `{c}` 直接渲染对象
+        # 会让 React 卸载整棵树（整页白屏）。规则路径本来就产出字符串，这里保证两路一致。
+        # **只在归一结果非空时覆盖**：模型没给该字段时保持原样，
+        # 避免把规则基线的冲突点清空（那是「需人工裁决」的提示，不该被抹掉）。
+        normalized_conflicts = normalize_text_list(
+            output.get("conflicts"),
+            preferred_keys=("text", "message", "title", "name", "conflict", "description"),
+        )
+        if normalized_conflicts:
+            output["conflicts"] = normalized_conflicts
+
         if not dims:
             return output
         weights = self._weights(state)

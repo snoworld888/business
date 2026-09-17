@@ -42,6 +42,40 @@ export function formatClock(iso?: string | null): string {
   return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
 }
 
+/**
+ * 把任意值安全地转成可渲染文本。
+ *
+ * 为什么必须存在
+ * --------------
+ * 模型/接口的「自由结构」字段随时可能从字符串漂移成对象
+ * （实测：LLM 对「建议验证实验」返回 `{hypothesis, target_pain_point, metric}`，
+ * 前端 `{e}` 直接渲染 ⇒ React 抛 `Objects are not valid as a React child`
+ * 并**卸载整棵树 ⇒ 整页白屏**）。
+ *
+ * 规则：字符串原样；对象按常见文本键取值，取不到就把字符串值拼起来；
+ * 其余 `String()`。**永不返回对象** —— 这是渲染层的最低保证。
+ */
+export function safeText(e: unknown): string {
+  if (typeof e === 'string') return e
+  if (e === null || e === undefined) return ''
+  if (typeof e === 'number' || typeof e === 'boolean') return String(e)
+  if (typeof e === 'object') {
+    const o = e as Record<string, unknown>
+    for (const k of ['hypothesis', 'title', 'name', 'text', 'label', 'message',
+                     'description', 'method', 'action', 'value']) {
+      const v = o[k]
+      if (typeof v === 'string' && v.trim()) return v.trim()
+      if (typeof v === 'number') return String(v)
+    }
+    const parts = Object.values(o).filter(
+      (v): v is string => typeof v === 'string' && v.trim().length > 0,
+    )
+    if (parts.length) return parts.join('；')
+    return ''   // 结构完全不认识：宁可留空，也不把对象交给 React
+  }
+  return String(e)
+}
+
 /** 空状态：插图 + 引导文案 + 主行动按钮（《原型设计》§4.2） */
 export function EmptyState({ title, description, actionText, onAction, children }: Props) {
   return (
@@ -97,7 +131,7 @@ export function MetricBar({
   return (
     <div style={{ marginBottom: 12 }}>
       <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-        <Typography.Text style={{ fontSize: 13 }}>{label}</Typography.Text>
+        <Typography.Text style={{ fontSize: 13 }}>{safeText(label)}</Typography.Text>
         <Typography.Text className="tc-muted" style={{ fontSize: 12 }}>
           {fmt(current)} / 目标 {fmt(target)}
           {achievement != null ? (
@@ -151,7 +185,7 @@ export function RankingBars({
           >
             <Space style={{ width: '100%', justifyContent: 'space-between' }}>
               <Typography.Text style={{ fontSize: 13 }}>
-                {item.rank}. {item.title}
+                {item.rank}. {safeText(item.title)}
               </Typography.Text>
               <Typography.Text strong style={{ fontSize: 13, color }}>
                 {item.total_score.toFixed(2)}
@@ -209,14 +243,14 @@ export function StatCard({
       <Space direction="vertical" size={2} style={{ width: '100%' }}>
         <Space style={{ width: '100%', justifyContent: 'space-between' }}>
           <Typography.Text className="tc-muted" style={{ fontSize: 13 }}>
-            {label}
+            {safeText(label)}
           </Typography.Text>
           <span style={{ color, fontSize: 16 }}>{icon}</span>
         </Space>
         <div className="tc-stat-value" style={{ color }}>
-          {value}
+          {safeText(value)}
           {suffix ? (
-            <span style={{ fontSize: 13, color: '#64748B', marginLeft: 4 }}>{suffix}</span>
+            <span style={{ fontSize: 13, color: '#64748B', marginLeft: 4 }}>{safeText(suffix)}</span>
           ) : null}
         </div>
       </Space>

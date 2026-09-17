@@ -15,7 +15,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { existsSync, mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -26,6 +26,9 @@ const CLICK = process.env.TC_CLICK ?? ''
 const SESSION = process.env.TC_SESSION ? JSON.parse(process.env.TC_SESSION) : null
 /** 'dispatch'（默认，派发鼠标事件）| 'click'（原生 el.click()，与冒烟脚本一致） */
 const CLICK_MODE = process.env.TC_CLICK_MODE ?? 'dispatch'
+/** 页面内要找的关键文本（逗号分隔），便于按场景调整断言 */
+const KEYS = (process.env.TC_KEYS ??
+  '痛点聚类,未聚类到痛点,匹配,需求强度,综合需求强度,样本覆盖').split(',')
 const WATCH_S = Number(process.env.TC_WATCH_S ?? 40)
 const PORT = Number(process.env.TC_CDP_PORT ?? 9335)
 const EMAIL = 'admin@demo.com'
@@ -192,9 +195,9 @@ async function main() {
 
   const snap = async (label) => {
     const s = await cdp.eval(`(() => {
+      const KEYS = ${JSON.stringify(KEYS)}
       const t = document.body.innerText || ''
-      const hit = ['痛点聚类', '未聚类到痛点', '匹配', '需求强度', '综合需求强度', '样本覆盖']
-        .filter(k => t.includes(k))
+      const hit = KEYS.filter(k => t.includes(k))
       return {
         hash: location.hash,
         len: t.length,
@@ -241,6 +244,12 @@ async function main() {
   console.log('\n控制台报错 / 异常：')
   if (!cdp.errors.length) console.log('  （无）')
   for (const e of [...new Set(cdp.errors)].slice(0, 10)) console.log(`  ${e}`)
+
+  if (process.env.TC_SHOT) {
+    const shot = await cdp.send('Page.captureScreenshot', { format: 'png' })
+    writeFileSync(process.env.TC_SHOT, Buffer.from(shot.data, 'base64'))
+    console.log(`\n截图：${process.env.TC_SHOT}`)
+  }
 }
 
 main()

@@ -1203,3 +1203,36 @@ class TestSuggestedExperimentContract:
             self._state(),
         )
         assert out["suggested_experiments"] == ["A", "B", "C", "D", "E"]
+
+
+class TestConflictContract:
+    """`conflicts` 必须是字符串列表。
+
+    前端 `Scorecard.tsx` 用 `{c}` 直接渲染该字段 —— 一旦是对象，
+    React 会抛 `Objects are not valid as a React child` 并卸载整棵树（整页白屏）。
+    规则基线本来就产出字符串，这里锁定「模型路径也必须一致」。
+    """
+
+    def _state(self):
+        return AgentState(query="x", signals=[])
+
+    def test_structured_conflicts_normalized(self):
+        out = DecisionSynthesisAgent().postprocess(
+            {
+                "dimensions": [],       # 维度不齐会直接返回，conflicts 归一在其之前
+                "conflicts": [
+                    {"text": "需求旺盛但壁垒薄弱"},
+                    "字符串冲突",
+                    {"title": "技术就绪但市场空间有限"},
+                ],
+            },
+            self._state(),
+        )
+        assert out["conflicts"] == [
+            "需求旺盛但壁垒薄弱", "字符串冲突", "技术就绪但市场空间有限",
+        ]
+
+    def test_missing_conflicts_not_cleared(self):
+        """模型没给该字段时**不得**抹成空 —— 规则基线的「需人工裁决」提示不能被清掉。"""
+        out = DecisionSynthesisAgent().postprocess({"dimensions": []}, self._state())
+        assert "conflicts" not in out

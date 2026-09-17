@@ -25,7 +25,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import PageHead from '../components/PageHead'
 import Radar from '../components/Radar'
 import EvidenceDrawer from '../components/EvidenceDrawer'
-import { EmptyState, RankingBars, formatClock } from '../components/widgets'
+import { EmptyState, RankingBars, formatClock, safeText } from '../components/widgets'
 import { opportunityApi, scorecardApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { usePersistentState } from '../hooks/usePersistentState'
@@ -403,8 +403,10 @@ export default function Scorecard() {
                     message="结论冲突点（需人工裁决）"
                     description={
                       <ul style={{ margin: 0, paddingLeft: 18 }}>
-                        {score.conflicts.map((c) => (
-                          <li key={c}>{c}</li>
+                        {score.conflicts.map((c, i) => (
+                          // 兜底渲染：该字段理论上来自规则基线（字符串），
+                          // 但模型路径一旦返回对象就会让整页白屏（见 components/ErrorBoundary）
+                          <li key={`${i}-${safeText(c)}`}>{safeText(c)}</li>
                         ))}
                       </ul>
                     }

@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 
 import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 import './styles/tokens.css'
 
 dayjs.locale('zh-cn')
@@ -38,7 +39,11 @@ createRoot(document.getElementById('root')!).render(
     >
       <AntApp>
         <HashRouter>
-          <App />
+          {/* 顶层兜底：连 AppLayout 都没渲染出来时（例如布局自身抛错）也能给出可读提示，
+              而不是一片空白 */}
+          <ErrorBoundary fullPage>
+            <App />
+          </ErrorBoundary>
         </HashRouter>
       </AntApp>
     </ConfigProvider>
