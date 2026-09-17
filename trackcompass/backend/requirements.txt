@@ -17,8 +17,17 @@ pytest==8.3.4
 # pymilvus==2.4.9        # 对应 services/vector_store.py: MilvusVectorStore
 # psycopg[binary]==3.2.3 # 生产 PostgreSQL 16
 # pgvector==0.3.6
-# python-pptx==1.0.2     # 报告导出 PPT
-# docxtpl==0.18.0        # 报告导出 Word
+# ---------------------------------------------------------------------------
+# 报告导出（PPT / Word）—— 可选依赖，未安装时 export() 会**自动降级为 Markdown**
+#
+# ⚠️ 2026-09-17 修正：原注释写的是 `docxtpl`，但代码实际用的是
+#    `from docx import Document` ⇒ 需要的是 **python-docx**，不是 docxtpl。
+#    包名写错会导致「按注释装完仍然不生效」。
+#
+# ⚠️ 另：python-pptx 未安装时导 PPT 会静默降级 —— 界面提示「已导出 PPTX」而实际拿到 Markdown。
+#    装上后可产出真 PPTX（已验证：10 页、封面含模板名与证据数）。
+python-pptx==1.0.2      # 报告导出 PPT（2026-09-17 已安装）
+python-docx==1.2.0      # 报告导出 Word（2026-09-17 已安装；代码走 `from docx import Document`）
 # celery==5.4.0          # 异步任务
 # redis==5.2.1
 # kafka-python==2.0.2

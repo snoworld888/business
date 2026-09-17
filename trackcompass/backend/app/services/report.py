@@ -352,15 +352,23 @@ def export(content: dict[str, Any], fmt: str, generated_at: str,
 
         prs = Presentation()
         title_slide = prs.slides.add_slide(prs.slide_layouts[0])
-        title_slide.shapes.title.text = content.get("title", "")
-        title_slide.placeholders[1].text = (
-            f"{content['meta']['template_name']} ｜ 证据 {content['meta']['evidence_count']} 条"
+        title_slide.shapes.title.text = content.get("title", "") or "决策报告"
+        # ⚠️ `template_name` 在 `content` 的**顶层**（见 `build_report` 的返回结构），
+        #    不在 `meta` 里。曾写死 `content['meta']['template_name']` ⇒ PPT 导出
+        #    必然 500 `KeyError: 'template_name'`；而该缺陷长期被
+        #    「python-pptx 未安装 → 直接降级 markdown」掩盖，装上依赖才暴露。
+        #    统一用 `.get()` 兜底，避免同类硬索引。
+        meta = content.get("meta") or {}
+        template_label = (
+            content.get("template_name") or meta.get("template_tone") or "标准模板"
         )
+        subtitle = title_slide.placeholders[1]
+        subtitle.text = f"{template_label} ｜ 证据 {meta.get('evidence_count', 0)} 条"
         for section in content.get("sections", []):
             slide = prs.slides.add_slide(prs.slide_layouts[1])
-            slide.shapes.title.text = section["title"]
+            slide.shapes.title.text = str(section.get("title") or "")
             body = slide.placeholders[1].text_frame
-            body.text = section["markdown"][:1200]
+            body.text = str(section.get("markdown") or "")[:1200]
             for para in body.paragraphs:
                 para.font.size = Pt(12)
         path = output_dir / f"{safe}_{stamp}.pptx"
@@ -375,12 +383,12 @@ def export(content: dict[str, Any], fmt: str, generated_at: str,
             return export(content, "markdown", generated_at, output_dir)
 
         doc = Document()
-        doc.add_heading(content.get("title", ""), level=0)
+        doc.add_heading(content.get("title", "") or "决策报告", level=0)
         for section in content.get("sections", []):
-            doc.add_heading(section["title"], level=1)
-            doc.add_paragraph(section["markdown"])
+            doc.add_heading(str(section.get("title") or ""), level=1)
+            doc.add_paragraph(str(section.get("markdown") or ""))
             if section.get("citations"):
-                doc.add_paragraph(f"证据引用：{', '.join(section['citations'])}")
+                doc.add_paragraph(f"证据引用：{', '.join(map(str, section['citations']))}")
         path = output_dir / f"{safe}_{stamp}.docx"
         doc.save(str(path))
         return {"format": "docx", "path": str(path), "url": path.as_uri()}
