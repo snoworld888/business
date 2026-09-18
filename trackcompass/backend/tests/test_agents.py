@@ -12,6 +12,7 @@ from app.agents.base import (
     SignalView,
     build_retrieval_query,
     extract_tech_keywords,
+    normalize_risk_alerts,
     signal_weight,
 )
 from app.agents.competition import CompetitionIntelAgent
@@ -1236,3 +1237,85 @@ class TestConflictContract:
         """模型没给该字段时**不得**抹成空 —— 规则基线的「需人工裁决」提示不能被清掉。"""
         out = DecisionSynthesisAgent().postprocess({"dimensions": []}, self._state())
         assert "conflicts" not in out
+
+
+class TestRiskAlertContract:
+    """`risk_alerts` 必须是**结构化条目** `[{dimension, level, title, detail}]`。
+
+    实测缺陷（2026-09-18 截图时发现）：真实大模型对「风险预警」返回的是
+    **叙事性字符串数组**（「交付能力瓶颈：公司 50-200 人规模难以支撑…」），
+    而界面按 `r.title` / `r.detail` 渲染 ⇒ 两个字段都是 `undefined`，
+    页面只剩 4 个「有图标、无文字」的黄色空卡；
+    `report.py` 的 `dicts_only()` 还会把字符串条目整段过滤掉 —— **报告里一条风险都不剩**。
+    """
+
+    def _state(self):
+        return AgentState(query="x", signals=[])
+
+    def test_string_items_become_structured(self):
+        out = DecisionSynthesisAgent().postprocess(
+            {
+                "dimensions": [],
+                "risk_alerts": ["交付能力瓶颈：50-200 人规模难以支撑大规模并行部署"],
+            },
+            self._state(),
+        )
+        alerts = out["risk_alerts"]
+        assert len(alerts) == 1
+        assert alerts[0]["title"] == "风险提示"
+        assert "交付能力瓶颈" in alerts[0]["detail"]
+        assert alerts[0]["level"] == "warning"
+
+    def test_partial_dict_gets_missing_fields_filled(self):
+        """模型给的字典缺 title 或 detail 时也要能显示（两字段互补兜底）。"""
+        out = DecisionSynthesisAgent().postprocess(
+            {"dimensions": [], "risk_alerts": [{"description": "算法鲁棒性不足，误检率高"}]},
+            self._state(),
+        )
+        a = out["risk_alerts"][0]
+        assert a["detail"] == "算法鲁棒性不足，误检率高"
+        assert a["title"]  # 由 detail 兜底而来，不能是空串
+
+    def test_level_unknown_falls_back_to_warning(self):
+        out = DecisionSynthesisAgent().postprocess(
+            {"dimensions": [], "risk_alerts": [{"title": "X", "detail": "Y", "level": "HIGH"}]},
+            self._state(),
+        )
+        assert out["risk_alerts"][0]["level"] == "warning"
+
+    def test_none_does_not_crash(self):
+        out = DecisionSynthesisAgent().postprocess(
+            {"dimensions": [], "risk_alerts": None}, self._state()
+        )
+        assert out["risk_alerts"] == []
+
+    def test_threshold_alerts_merge_with_model_risks(self):
+        """两条路径的信息都要留：阈值预警（可追溯）+ 模型叙事风险（有业务语境）。"""
+        from app.services.scoring import risk_alerts_from
+
+        rule = risk_alerts_from({"demand": 2.0, "competition": 2.0})
+        model = [{"title": "交付能力瓶颈", "detail": "50-200 人规模难以支撑并行部署"}]
+        out = normalize_risk_alerts(rule + model)
+        titles = [a["title"] for a in out]
+        assert "需求真实性存疑" in titles          # 规则侧
+        assert "交付能力瓶颈" in titles            # 模型侧
+        # 规则侧保留了可追溯的阈值说明
+        assert any("阈值" in a["detail"] for a in out)
+
+    def test_dedup_and_cap(self):
+        many = [{"title": f"R{i}", "detail": f"d{i}"} for i in range(20)]
+        out = normalize_risk_alerts(many + many)     # 重复一遍
+        assert len(out) == 8                          # 上限
+        assert len({a["title"] for a in out}) == 8    # 去重后无重复
+
+    def test_rule_path_unchanged(self):
+        """规则路径（pytest 默认引擎）产出的结构与前端契约必须一致。"""
+        st = AgentState(
+            query="质检", signals=[_sig(1, "news", "AI 质检 市场")],
+            profile={"tech_stack": ["计算机视觉"]},
+        )
+        out = DecisionSynthesisAgent().rule(st)
+        for a in out["risk_alerts"]:
+            assert set(a) >= {"dimension", "level", "title", "detail"}
+            assert a["level"] in ("critical", "warning")
+            assert a["title"] and a["detail"]

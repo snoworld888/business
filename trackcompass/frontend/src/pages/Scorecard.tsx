@@ -25,7 +25,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import PageHead from '../components/PageHead'
 import Radar from '../components/Radar'
 import EvidenceDrawer from '../components/EvidenceDrawer'
-import { EmptyState, RankingBars, formatClock, safeText } from '../components/widgets'
+import { EmptyState, RankingBars, formatClock, riskItem, safeText } from '../components/widgets'
 import { opportunityApi, scorecardApi } from '../api/client'
 import { useAsync } from '../hooks/useAuth'
 import { usePersistentState } from '../hooks/usePersistentState'
@@ -447,15 +447,20 @@ export default function Scorecard() {
           <Card title="风险预警" size="small" style={{ marginBottom: 16 }}>
             {score?.risk_alerts?.length ? (
               <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                {score.risk_alerts.map((r, i) => (
-                  <Alert
-                    key={i}
-                    type={r.level === 'critical' ? 'error' : 'warning'}
-                    showIcon
-                    message={r.title}
-                    description={<span style={{ fontSize: 12 }}>{r.detail}</span>}
-                  />
-                ))}
+                {score.risk_alerts.map((raw, i) => {
+                  // 旧数据可能是纯字符串（真实大模型早期产出叙事性风险长句）——
+                  // 直接取 `r.title` 会得到 undefined，页面只剩「有图标、无文字」的空卡
+                  const r = riskItem(raw)
+                  return (
+                    <Alert
+                      key={i}
+                      type={r.level === 'critical' ? 'error' : 'warning'}
+                      showIcon
+                      message={r.title}
+                      description={<span style={{ fontSize: 12 }}>{r.detail}</span>}
+                    />
+                  )
+                })}
               </Space>
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无触发阈值的风险项" />

@@ -15,6 +15,7 @@ from app.agents.base import (
     as_dict,
     as_list,
     dicts_only,
+    normalize_risk_alerts,
     normalize_text_list,
 )
 from app.services.llm import COMPLEXITY_COMPLEX
@@ -172,7 +173,15 @@ class DecisionSynthesisAgent(BaseAgent):
         if normalized_conflicts:
             output["conflicts"] = normalized_conflicts
 
+        # ⚠️ `risk_alerts` 归一：模型返回的是**叙事性字符串数组**
+        # （「交付能力瓶颈：公司 50-200 人规模难以支撑…」），而前端按结构体渲染
+        # `r.title` / `r.detail` ⇒ 两个字段都是 undefined，页面只剩「有图标、无文字」的空卡；
+        # `report.py` 的 `dicts_only()` 还会把字符串条目整段丢掉（报告里一条风险都不剩）。
+        # 这里统一成结构化条目，**并保留模型识别出的风险内容**（信息不丢）。
+        model_risks = normalize_risk_alerts(output.get("risk_alerts"))
+
         if not dims:
+            output["risk_alerts"] = model_risks
             return output
         weights = self._weights(state)
         norm: list[dict[str, Any]] = []
@@ -199,6 +208,12 @@ class DecisionSynthesisAgent(BaseAgent):
         output["total_score"] = total_score(norm)
         output["explained"] = explain_score(norm)
         output["verdict"] = self._verdict(output["total_score"])
+        # 风险预警 = **阈值预警**（确定性、带维度与阈值说明，可追溯）+
+        # **模型叙事风险**（有业务语境，如「交付能力瓶颈」）。
+        # 两者信息互补，合并后按 title+detail 去重（`normalize_risk_alerts` 内做），上限 8 条。
+        output["risk_alerts"] = normalize_risk_alerts(
+            risk_alerts_from({d["key"]: d["score"] for d in norm}) + model_risks
+        )
         return output
 
     # ------------------------------------------------------------ 子算法

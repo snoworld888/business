@@ -14,7 +14,7 @@ from typing import Any
 
 from jinja2 import Template
 
-from app.agents.base import as_list, dicts_only
+from app.agents.base import as_list, dicts_only, normalize_risk_alerts
 
 logger = logging.getLogger(__name__)
 
@@ -210,7 +210,10 @@ def build_content(ctx: ReportContext, template: str = "investment_memo") -> dict
 """, [d["ref"] for d in ctx.evidence[:3]])
 
     # 7. 风险
-    risks = dicts_only(ctx.score.get("risk_alerts"))
+    # ⚠️ 必须走 `normalize_risk_alerts` 而不是直接用 `dicts_only`：
+    # 真实大模型产出的是**叙事性字符串数组**，`dicts_only` 会把它们全部过滤掉
+    # ⇒ 报告里一条风险都不剩（旧数据同理）。归一后字符串条目也能进报告。
+    risks = normalize_risk_alerts(ctx.score.get("risk_alerts"))
     add("risks", "\n".join(
         f"- ⚠ **{_pick(r, 'title', 'name')}**：{_pick(r, 'detail', 'description', 'message')}"
         for r in risks

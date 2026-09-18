@@ -142,6 +142,15 @@ export interface RiskAlert {
   detail: string
 }
 
+/**
+ * 风险预警字段的实际形态：**结构化条目或纯字符串**。
+ *
+ * 历史数据里真实大模型产出的是叙事性风险长句（字符串数组），
+ * 后端已归一（`agents/base.py::normalize_risk_alerts`），但旧库数据仍在 ——
+ * 故类型如实声明，渲染一律走 `widgets.tsx::riskItem()` 转换。
+ */
+export type RiskAlertLike = RiskAlert | string
+
 export interface Verdict {
   code: string
   label: string
@@ -152,7 +161,7 @@ export interface OpportunityScore {
   total_score: number
   dimensions: ScoreDimension[]
   explained?: { total_score: number; dimensions: ScoreDimension[]; weights_valid: Record<string, unknown> }
-  risk_alerts: RiskAlert[]
+  risk_alerts: RiskAlertLike[]
   verdict?: Verdict
   conflicts?: string[]
 }
@@ -168,7 +177,7 @@ export interface Opportunity {
   verdict?: Verdict
   score?: OpportunityScore | Record<string, never>
   evidence: Evidence[]
-  risk_alerts: RiskAlert[]
+  risk_alerts: RiskAlertLike[]
   analysis?: AnalysisResult
   evidence_count?: number
   risk_count?: number
@@ -239,7 +248,7 @@ export interface AnalysisResult {
   decision?: {
     dimensions: ScoreDimension[]
     total_score: number
-    risk_alerts: RiskAlert[]
+    risk_alerts: RiskAlertLike[]
     conflicts: string[]
     verdict: Verdict
   }

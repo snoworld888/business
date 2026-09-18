@@ -99,6 +99,76 @@ def normalize_text_list(
     return out
 
 
+# 「风险预警」条目里可能的文本字段（模型常写成叙事性长句，字段名不固定）
+_RISK_TITLE_KEYS = ("title", "name", "risk", "label")
+_RISK_DETAIL_KEYS = ("detail", "description", "text", "message", "content", "rationale")
+
+
+def normalize_risk_alerts(items: Any, limit: int = 8) -> list[dict[str, Any]]:
+    """把「风险预警」归一为 `[{dimension, level, title, detail}]`。
+
+    为什么必须归一（实测缺陷）：规则路径产出的是**结构化条目**
+    （`{"dimension": "demand", "level": "warning", "title": "需求真实性存疑",
+    "detail": "demand 得分 2.80 < 阈值 3.00"}`），
+    而真实大模型返回的是**叙事性字符串数组**（「交付能力瓶颈：公司 50-200 人规模难以支撑…」）。
+    前端按结构体渲染 `r.title` / `r.detail` ⇒ **两张都是 undefined**，
+    页面只剩 4 个「有图标、无文字」的黄色空卡（截图见 `docs/manual_shots/p07-scorecard.png` 修复前）。
+    下游也受影响：`report.py` 用 `dicts_only()` 过滤该字段 ⇒ 字符串条目被整段丢掉，
+    **报告里一条风险都不剩**。
+
+    规则：
+    - `str` → `{title: "风险提示", detail: <原文>, level: "warning"}`
+    - `dict` → 补齐键：`level` 归一为 `critical`/`warning`；标题与详情按候选键取值，缺失时互补兜底
+    - 去重（按 title+detail）、截断长度、限制条数
+    """
+    out: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in as_list(items):
+        if isinstance(item, str):
+            text = item.strip()
+            if not text:
+                continue
+            entry = {"dimension": None, "level": "warning", "title": "风险提示", "detail": text}
+        elif isinstance(item, dict):
+            title = ""
+            for key in _RISK_TITLE_KEYS:
+                value = item.get(key)
+                if isinstance(value, str) and value.strip():
+                    title = value.strip()
+                    break
+            detail = ""
+            for key in _RISK_DETAIL_KEYS:
+                value = item.get(key)
+                if isinstance(value, str) and value.strip():
+                    detail = value.strip()
+                    break
+            if not detail:
+                detail = title
+            if not title:
+                # 没有标题就用详情首句兜底，保证前端任何分支都有字可显示
+                title = detail[:24] or "风险提示"
+            level = str(item.get("level") or "").strip().lower()
+            if level not in ("critical", "warning"):
+                level = "warning"
+            dimension = item.get("dimension")
+            entry = {
+                "dimension": str(dimension) if isinstance(dimension, str) and dimension else None,
+                "level": level,
+                "title": title[:80],
+                "detail": detail[:400],
+            }
+        else:
+            continue
+        key = (entry["title"], entry["detail"])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(entry)
+        if len(out) >= limit:
+            break
+    return out
+
+
 def normalize_experiments(items: Any) -> list[str]:
     """「建议验证实验」专用入口（语义化命名，便于检索；规则见 `normalize_text_list`）。
 

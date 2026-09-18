@@ -326,6 +326,11 @@
 51. **冒烟不能绕过真实入口**：注入状态跑得快，但会系统性掩盖入口链路缺陷（登录必须真实走表单）。
 52. **断言失败信息不能吞异常**（`.catch(() => '')` 会把「页面正在导航」伪装成「整页白屏」）。
     诊断脚本必须把 **console 报错 + `Page.frameNavigated` + 页面文本**一并抓出来。
+53. 🌟 **渲染层要有兜底边界**：单页渲染错误不该让整页不可用。`components/ErrorBoundary.tsx`
+    （**路由级 + 顶层**两级）必须显示 `error.message` 并给出路（重试 / 回工作台）；
+    通用展示组件（`StatCard` / `MetricBar` / `RankingBars`）的文本属性走 `safeText()`。
+    实测：注入 throw ⇒ 页面显示「这块内容渲染出错了」+ 错误原文 + **侧栏仍可用**
+    （截图 `docs/错误边界-兜底验证.png`）。
 54. 🌟🌟 **「可选依赖未装」会掩盖代码缺陷**（2026-09-17 报告导出）。
     `export()` 里 PPT 分支写死 `content['meta']['template_name']`（该键实际在**顶层**）⇒ 必然 KeyError；
     但**因为 `python-pptx` 没装**，代码走的是「ImportError → 降级 markdown」分支，
@@ -333,11 +338,15 @@
     ⇒ 规矩：**只要某功能宣称可用，就必须有「真跑产物」的测试**（打开生成的文件验证页数/标题），
     不能只测「调用没报错」。另：`requirements.txt` 的注释也要与实际 import 一致
     （原写 `docxtpl`，代码实际 `from docx import Document` ⇒ 应为 python-docx）。
-53. 🌟 **渲染层要有兜底边界**：单页渲染错误不该让整页不可用。`components/ErrorBoundary.tsx`
-    （**路由级 + 顶层**两级）必须显示 `error.message` 并给出路（重试 / 回工作台）；
-    通用展示组件（`StatCard` / `MetricBar` / `RankingBars`）的文本属性走 `safeText()`。
-    实测：注入 throw ⇒ 页面显示「这块内容渲染出错了」+ 错误原文 + **侧栏仍可用**
-    （截图 `docs/错误边界-兜底验证.png`）。
+55. 🌟🌟 **「同一字段多个消费方」是最隐蔽的缺陷形态**（2026-09-18 风险预警）。
+    模型对 `risk_alerts` 返回**叙事性字符串数组**（规则路径返回结构化条目）：
+    界面按 `{title,detail}` 渲染 ⇒ 全是 `undefined`、只剩「有图标无文字」的空卡；
+    `report.py` 的 `dicts_only()` 又整段过滤 ⇒ 报告风险段恒为「暂无」。
+    **两个症状完全不同，却是同一个根因。**
+    ⇒ 规矩：① **字段形态由后端统一归一，所有消费方共用同一个归一函数**；
+    ② 改字段时**问一句「这个字段还有谁在用」** —— 只改界面会留下「报告里静默丢内容」这类更隐蔽的问题。
+    ⚠️ **本次缺陷是「给手册拍截图时肉眼看出来」的**，单测/E2E/UI 冒烟全部漏过
+    （它们断言的是别的字段）⇒ **写文档与截图是有效的验收手段**，别当成纯体力活。
 
 ## 参考文档（工作区根目录，未纳入版本管理）
 
@@ -361,5 +370,9 @@ RAGFlow接入评估 · RAG关键词抽取开关评估 · 趋势雷达·能力画
 **`ui_smoke_persist.mjs`** · `check_llm_connection.py` · `check_ragflow.py` · `probe_topology.py` ·
 `probe_two_order.sh` · `diag_ollama_knobs.sh` · `ollama-override.conf` · `compare_ragflow_keyword.py` ·
 `collect_signals.py` · `analyze_trend_similarity.py`
+- `docs/产品使用手册.md` —— **面向用户的操作说明书（V2.0）**：3 分钟上手 + 逐页说明（含真实界面截图）
+  + 按症状组织的排查 + 算法口径。**配图由 `scripts/shoot_manual.mjs` 生成，可一键重跑刷新**
+- `docs/manual_shots/` —— 手册配图（13 张真实界面截图，1440 宽）
+- `docs/风险预警字段形态修复.md` —— F-03 案例（模型字符串数组 vs 双消费方）
 - `docs/功能状态总表.md` —— **功能级进度台账**（逐功能点：来源章节/状态/实现位置/证据 + 缺口 G-01~G-16）
 - `docs/开发约定与踩坑.md` —— **约定 1–54 的案例详情**（MEMORY.md 只留规则与判据）

@@ -76,6 +76,36 @@ export function safeText(e: unknown): string {
   return String(e)
 }
 
+/**
+ * 风险预警条目 → 可渲染的 `{level, title, detail}`。
+ *
+ * 为什么需要：**旧数据里该字段是纯字符串数组**（真实大模型早期产出的是叙事性风险长句），
+ * 而界面按 `{title, detail}` 渲染 ⇒ 两个字段都取到 `undefined`，
+ * 页面只剩「有图标、无文字」的黄色空卡（`docs/manual_shots/p07-scorecard.png` 修复前即如此）。
+ * 后端已归一（`agents/base.py::normalize_risk_alerts`），此处兜底历史缓存与旧库数据 ——
+ * 与 `safeText` 同一原则：**渲染层不该因为数据形态变化而显示空白**。
+ */
+export function riskItem(raw: unknown): { level: string; title: string; detail: string } {
+  if (typeof raw === 'string') {
+    return { level: 'warning', title: '风险提示', detail: raw }
+  }
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>
+    const pick = (...keys: string[]) => {
+      for (const k of keys) {
+        const v = o[k]
+        if (typeof v === 'string' && v.trim()) return v.trim()
+      }
+      return ''
+    }
+    const title = pick('title', 'name')
+    const detail = pick('detail', 'description', 'message', 'text')
+    const level = pick('level') === 'critical' ? 'critical' : 'warning'
+    return { level, title: title || detail.slice(0, 24) || '风险提示', detail: detail || title }
+  }
+  return { level: 'warning', title: '风险提示', detail: safeText(raw) }
+}
+
 /** 空状态：插图 + 引导文案 + 主行动按钮（《原型设计》§4.2） */
 export function EmptyState({ title, description, actionText, onAction, children }: Props) {
   return (
