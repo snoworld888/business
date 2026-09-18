@@ -348,6 +348,16 @@
     ⚠️ **本次缺陷是「给手册拍截图时肉眼看出来」的**，单测/E2E/UI 冒烟全部漏过
     （它们断言的是别的字段）⇒ **写文档与截图是有效的验收手段**，别当成纯体力活。
 
+56. 🌟 **导出 Word/文档类产物：先判入口，再核产物**（2026-09-18 手册导 Word）。
+    - **入口**：内容已存在、只要求排版分发且此前无 .docx ⇒ `beautify_only`（S2→S3）；
+      选 `full_pipeline` 会让 S1 **重写**已核对的文档。已有 .docx 要改内容 ⇒ 走 `tencent-docs-routing`。
+    - **环境**：plugin 的 `scripts/wb/local/setup-html-to-docx.sh` 是 **Linux 布局**
+      （校验 `$VENV/bin/python`），Windows 上 **exit 2 且无报错**（只打印到 "Creating venv…"）。
+      按其预期路径 `$HOME/.venv-html-to-docx` 手工 `uv venv --python 3.12` + 装它自己的
+      `requirements.txt`（uv 在 `C:/Users/PC/.local/bin/`，**不在 PATH**）——只准备环境，不换转换器。
+    - **核验**：`success:true` 不等于对。必须解 docx 包核对：内嵌图片数 == 源图片数、
+      表格数、`Heading1×1`/`Heading2×章数`、分节数、页脚 `PAGE` 域、源文本逐条命中。
+    - 已知无害差异：中英混排处多空格、行内 `code` 反引号消失、目录是静态列表（非 Word TOC 域）。
 ## 参考文档（工作区根目录，未纳入版本管理）
 
 `需求文档.txt` / `设计文档.txt` / `技术文档.txt` / `原型设计.txt` / `AI设计.txt`
@@ -373,6 +383,7 @@ RAGFlow接入评估 · RAG关键词抽取开关评估 · 趋势雷达·能力画
 - `docs/产品使用手册.md` —— **面向用户的操作说明书（V2.0）**：3 分钟上手 + 逐页说明（含真实界面截图）
   + 按症状组织的排查 + 算法口径。**配图由 `scripts/shoot_manual.mjs` 生成，可一键重跑刷新**
 - `docs/manual_shots/` —— 手册配图（13 张真实界面截图，1440 宽）
+- `docs/产品使用手册.docx` —— 手册的 **Word 版**（2.0 MB：封面 + 静态目录 + 28 张表 + 13 张内嵌截图），由 tencent-docx 流水线导出
 - `docs/风险预警字段形态修复.md` —— F-03 案例（模型字符串数组 vs 双消费方）
 - `docs/功能状态总表.md` —— **功能级进度台账**（逐功能点：来源章节/状态/实现位置/证据 + 缺口 G-01~G-16）
 - `docs/开发约定与踩坑.md` —— **约定 1–54 的案例详情**（MEMORY.md 只留规则与判据）
